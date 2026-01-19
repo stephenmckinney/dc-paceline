@@ -1,0 +1,26 @@
+---
+// Catch-all route for Sanity Studio
+// Studio handles its own client-side routing
+import Studio from '../../components/Studio'
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="same-origin" />
+    <meta name="robots" content="noindex" />
+    <title>DC Paceline Studio</title>
+    <style is:global>
+      html, body, #studio {
+        height: 100%;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="studio">
+      <Studio client:only="react" />
+    </div>
+  </body>
+</html>

@@ -1,16 +1,67 @@
 ---
+import { client } from '../../sanity/client'
 
+// Fetch all posts from Sanity
+const posts = await client.fetch<{ _id: string; title: string; body?: string }[]>(
+  `*[_type == "post"] | order(_createdAt desc)`
+)
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>DC Paceline</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      h1 {
+        color: #171717;
+      }
+      .post {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e5e5e5;
+      }
+      .post h2 {
+        margin: 0 0 0.5rem;
+        color: #171717;
+      }
+      .post p {
+        color: #525252;
+        margin: 0;
+      }
+      .admin-link {
+        color: #E51937;
+        text-decoration: none;
+      }
+      .admin-link:hover {
+        text-decoration: underline;
+      }
+      .empty {
+        color: #737373;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>DC Paceline</h1>
+    <p><a href="/admin" class="admin-link">Open Studio</a></p>
+
+    {posts.length === 0 ? (
+      <p class="empty">No posts yet. Add one in the <a href="/admin" class="admin-link">Studio</a>.</p>
+    ) : (
+      posts.map((post) => (
+        <div class="post">
+          <h2>{post.title}</h2>
+          {post.body && <p>{post.body}</p>}
+        </div>
+      ))
+    )}
+  </body>
 </html>
