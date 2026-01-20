@@ -302,20 +302,18 @@ body {
 }
 
 .footer-right {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   flex-shrink: 0;
 }
 
-.footer-right a {
-  color: var(--gray-400);
-  text-decoration: none;
+.footer-github {
   display: flex;
   align-items: center;
+  gap: 6px;
+  color: var(--gray-400);
+  text-decoration: none;
 }
 
-.footer-right a:hover {
+.footer-github:hover {
   color: var(--gray-900);
 }
 
