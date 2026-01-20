@@ -101,7 +101,7 @@ dc-paceline/
 
 ### Cloudflare Pages Setup
 
-1. Connect your GitHub repo in Cloudflare Dashboard → Workers & Pages
+1. Connect your GitHub repo in [Cloudflare Dashboard](https://dash.cloudflare.com/login) → Workers & Pages
 2. Build settings:
    - **Build command:** `npm run build`
    - **Build output directory:** `dist`
