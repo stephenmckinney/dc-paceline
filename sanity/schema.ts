@@ -89,13 +89,6 @@ const ride = defineType({
       description: 'e.g., "Strava", "Details", "DCMTB" (defaults to "Details")',
     }),
     defineField({
-      name: 'published',
-      title: 'Published',
-      type: 'boolean',
-      description: 'Only published rides appear on the site',
-      initialValue: true,
-    }),
-    defineField({
       name: 'inSeason',
       title: 'In Season',
       type: 'boolean',
@@ -115,13 +108,12 @@ const ride = defineType({
       title: 'name',
       day: 'dayOfWeek',
       time: 'time',
-      published: 'published',
     },
-    prepare({ title, day, time, published }) {
+    prepare({ title, day, time }) {
       const dayLabel = day ? day.charAt(0).toUpperCase() + day.slice(1) : ''
       return {
         title,
-        subtitle: `${dayLabel} ${time}${published ? '' : ' (draft)'}`,
+        subtitle: `${dayLabel} ${time}`,
       }
     },
   },

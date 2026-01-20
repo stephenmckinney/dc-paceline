@@ -17,9 +17,9 @@ interface Ride {
   urlLabel?: string
 }
 
-// Fetch published rides from Sanity
+// Fetch published rides from Sanity (excludes drafts)
 const rides = await client.fetch<Ride[]>(`
-  *[_type == "ride" && published == true] | order(dayOfWeek asc, time asc) {
+  *[_type == "ride" && !(_id in path("drafts.**"))] | order(dayOfWeek asc, time asc) {
     _id,
     name,
     dayOfWeek,
