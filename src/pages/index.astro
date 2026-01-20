@@ -1,67 +1,81 @@
 ---
+import Layout from '../layouts/Layout.astro'
+import RideCard from '../components/RideCard.astro'
 import { client } from '../../sanity/client'
 
-// Fetch all posts from Sanity
-const posts = await client.fetch<{ _id: string; title: string; body?: string }[]>(
-  `*[_type == "post"] | order(_createdAt desc)`
-)
+// Define ride type
+interface Ride {
+  _id: string
+  name: string
+  dayOfWeek: string
+  time: string
+  location: string
+  pace: 'A' | 'BB' | 'B' | 'C' | 'D'
+  description?: string
+  mapUrl?: string
+  url?: string
+  urlLabel?: string
+}
+
+// Fetch published rides from Sanity
+const rides = await client.fetch<Ride[]>(`
+  *[_type == "ride" && published == true] | order(dayOfWeek asc, time asc) {
+    _id,
+    name,
+    dayOfWeek,
+    time,
+    location,
+    pace,
+    description,
+    mapUrl,
+    url,
+    urlLabel
+  }
+`)
+
+// Group rides by day of week
+const dayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+const dayLabels: Record<string, string> = {
+  monday: 'Monday',
+  tuesday: 'Tuesday',
+  wednesday: 'Wednesday',
+  thursday: 'Thursday',
+  friday: 'Friday',
+  saturday: 'Saturday',
+  sunday: 'Sunday',
+}
+
+const ridesByDay = dayOrder
+  .map((day) => ({
+    day,
+    label: dayLabels[day],
+    rides: rides.filter((ride) => ride.dayOfWeek === day),
+  }))
+  .filter((group) => group.rides.length > 0)
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>DC Paceline</title>
-    <style>
-      body {
-        font-family: system-ui, sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 2rem;
-      }
-      h1 {
-        color: #171717;
-      }
-      .post {
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #e5e5e5;
-      }
-      .post h2 {
-        margin: 0 0 0.5rem;
-        color: #171717;
-      }
-      .post p {
-        color: #525252;
-        margin: 0;
-      }
-      .admin-link {
-        color: #E51937;
-        text-decoration: none;
-      }
-      .admin-link:hover {
-        text-decoration: underline;
-      }
-      .empty {
-        color: #737373;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>DC Paceline</h1>
-    <p><a href="/admin" class="admin-link">Open Studio</a></p>
-
-    {posts.length === 0 ? (
-      <p class="empty">No posts yet. Add one in the <a href="/admin" class="admin-link">Studio</a>.</p>
-    ) : (
-      posts.map((post) => (
-        <div class="post">
-          <h2>{post.title}</h2>
-          {post.body && <p>{post.body}</p>}
-        </div>
-      ))
-    )}
-  </body>
-</html>
+<Layout>
+  {ridesByDay.length === 0 ? (
+    <div class="empty-state">
+      <p>No rides yet. <a href="/admin">Add some in the Studio</a>.</p>
+    </div>
+  ) : (
+    ridesByDay.map((group) => (
+      <section class="day-section">
+        <h2 class="day-header">{group.label}</h2>
+        {group.rides.map((ride) => (
+          <RideCard
+            name={ride.name}
+            time={ride.time}
+            location={ride.location}
+            pace={ride.pace}
+            description={ride.description}
+            mapUrl={ride.mapUrl}
+            url={ride.url}
+            urlLabel={ride.urlLabel}
+          />
+        ))}
+      </section>
+    ))
+  )}
+</Layout>

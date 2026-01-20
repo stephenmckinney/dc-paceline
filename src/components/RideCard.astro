@@ -1,0 +1,86 @@
+---
+interface Props {
+  name: string
+  time: string
+  location: string
+  pace: 'A' | 'BB' | 'B' | 'C' | 'D'
+  description?: string
+  mapUrl?: string
+  url?: string
+  urlLabel?: string
+}
+
+const { name, time, location, pace, description, mapUrl, url, urlLabel = 'Details' } = Astro.props
+
+// Pace to dots mapping: A=5, BB=4, B=3, C=2, D=1
+const paceDots: Record<string, number> = {
+  'A': 5,
+  'BB': 4,
+  'B': 3,
+  'C': 2,
+  'D': 1,
+}
+
+const filledDots = paceDots[pace] || 3
+---
+
+<article class="ride-card">
+  <div class="ride-header" data-ride-toggle>
+    <div class="ride-info">
+      <h3 class="ride-title">{name}</h3>
+      <div class="ride-meta">
+        <span class="ride-meta-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          {time}
+        </span>
+        <span class="ride-meta-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          </svg>
+          {location}
+        </span>
+      </div>
+    </div>
+    <div class="ride-right">
+      <div class="pace-rating">
+        {[1, 2, 3, 4, 5].map((dot) => (
+          <span class:list={['pace-dot', { filled: dot <= filledDots }]}></span>
+        ))}
+        <span class="pace-label">{pace}</span>
+      </div>
+      <svg class="expand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      </svg>
+    </div>
+  </div>
+  <div class="ride-details">
+    {description && <p class="ride-description">{description}</p>}
+    <div class="ride-links">
+      {mapUrl && (
+        <a href={mapUrl} class="ride-link" target="_blank" rel="noopener noreferrer">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          </svg>
+          Map
+        </a>
+      )}
+      {url && (
+        <a href={url} class="ride-link secondary" target="_blank" rel="noopener noreferrer">
+          {urlLabel}
+        </a>
+      )}
+    </div>
+  </div>
+</article>
+
+<script>
+  // Handle card expansion
+  document.querySelectorAll('[data-ride-toggle]').forEach((header) => {
+    header.addEventListener('click', () => {
+      const card = header.closest('.ride-card')
+      card?.classList.toggle('expanded')
+    })
+  })
+</script>
