@@ -2,20 +2,7 @@
 import Layout from '../layouts/Layout.astro'
 import RideCard from '../components/RideCard.astro'
 import { client } from '../../sanity/client'
-
-// Define ride type
-interface Ride {
-  _id: string
-  name: string
-  dayOfWeek: string
-  time: string
-  location: string
-  pace: 'A' | 'BB' | 'B' | 'C' | 'D'
-  description?: string
-  mapUrl?: string
-  url?: string
-  urlLabel?: string
-}
+import type { Ride } from '../types/sanity'
 
 // Fetch published rides from Sanity (excludes drafts)
 const rides = await client.fetch<Ride[]>(`

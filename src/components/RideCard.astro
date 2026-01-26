@@ -1,9 +1,11 @@
 ---
+import type { PaceGrade } from '../types/sanity'
+
 interface Props {
   name: string
   time: string
   location: string
-  pace: 'A' | 'BB' | 'B' | 'C' | 'D'
+  pace: PaceGrade
   description?: string
   mapUrl?: string
   url?: string
