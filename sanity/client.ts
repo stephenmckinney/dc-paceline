@@ -1,8 +1,7 @@
 import { createClient } from '@sanity/client'
+import { sanityConfig } from './config'
 
 export const client = createClient({
-  projectId: 'q8bq1hip',
-  dataset: 'production',
-  apiVersion: '2024-01-19',
+  ...sanityConfig,
   useCdn: true, // Use CDN for faster reads in production
 })
