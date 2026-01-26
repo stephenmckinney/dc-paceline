@@ -5,20 +5,28 @@ import { client } from '../../sanity/client'
 import type { Ride } from '../types/sanity'
 
 // Fetch published rides from Sanity (excludes drafts)
-const rides = await client.fetch<Ride[]>(`
-  *[_type == "ride" && !(_id in path("drafts.**"))] | order(dayOfWeek asc, time asc) {
-    _id,
-    name,
-    dayOfWeek,
-    time,
-    location,
-    pace,
-    description,
-    mapUrl,
-    url,
-    urlLabel
-  }
-`)
+let rides: Ride[] = []
+let fetchError = false
+
+try {
+  rides = await client.fetch<Ride[]>(`
+    *[_type == "ride" && !(_id in path("drafts.**"))] | order(dayOfWeek asc, time asc) {
+      _id,
+      name,
+      dayOfWeek,
+      time,
+      location,
+      pace,
+      description,
+      mapUrl,
+      url,
+      urlLabel
+    }
+  `)
+} catch (error) {
+  console.error('Failed to fetch rides from Sanity:', error)
+  fetchError = true
+}
 
 // Group rides by day of week
 const dayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
@@ -42,7 +50,11 @@ const ridesByDay = dayOrder
 ---
 
 <Layout>
-  {ridesByDay.length === 0 ? (
+  {fetchError ? (
+    <div class="empty-state">
+      <p>Unable to load rides. Please try again later.</p>
+    </div>
+  ) : ridesByDay.length === 0 ? (
     <div class="empty-state">
       <p>No rides yet. <a href="/admin">Add some in the Studio</a>.</p>
     </div>
