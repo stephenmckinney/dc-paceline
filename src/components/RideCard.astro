@@ -10,9 +10,11 @@ interface Props {
   mapUrl?: string
   url?: string
   urlLabel?: string
+  outOfSeason?: boolean
+  seasonNote?: string | null
 }
 
-const { name, time, location, pace, description, mapUrl, url, urlLabel = 'Details' } = Astro.props
+const { name, time, location, pace, description, mapUrl, url, urlLabel = 'Details', outOfSeason = false, seasonNote } = Astro.props
 
 // Pace to dots mapping: A=5, BB=4, B=3, C=2, D=1
 const paceDots: Record<string, number> = {
@@ -26,10 +28,13 @@ const paceDots: Record<string, number> = {
 const filledDots = paceDots[pace] || 3
 ---
 
-<article class="ride-card">
+<article class:list={['ride-card', { 'out-of-season': outOfSeason }]}>
   <div class="ride-header" data-ride-toggle>
     <div class="ride-info">
       <h3 class="ride-title">{name}</h3>
+      {outOfSeason && seasonNote && (
+        <span class="season-badge">{seasonNote}</span>
+      )}
       <div class="ride-meta">
         <span class="ride-meta-item">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">

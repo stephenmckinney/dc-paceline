@@ -63,8 +63,8 @@ export interface Ride {
   description?: string
   url?: string
   urlLabel?: string
-  inSeason?: boolean
-  outOfSeasonNote?: string
+  seasonStart?: number
+  seasonEnd?: number
 }
 
 // Expanded ride type with resolved references (after GROQ query)

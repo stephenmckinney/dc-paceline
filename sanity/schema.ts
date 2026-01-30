@@ -18,6 +18,21 @@ const PACE_GRADES = [
   { title: 'D - Beginner-friendly, very chill', value: 'D' },
 ]
 
+const MONTHS = [
+  { title: 'January', value: 1 },
+  { title: 'February', value: 2 },
+  { title: 'March', value: 3 },
+  { title: 'April', value: 4 },
+  { title: 'May', value: 5 },
+  { title: 'June', value: 6 },
+  { title: 'July', value: 7 },
+  { title: 'August', value: 8 },
+  { title: 'September', value: 9 },
+  { title: 'October', value: 10 },
+  { title: 'November', value: 11 },
+  { title: 'December', value: 12 },
+]
+
 // ============================================
 // City
 // ============================================
@@ -134,6 +149,12 @@ const ride = defineType({
       title: 'Start Location',
       options: { collapsible: false },
     },
+    {
+      name: 'season',
+      title: 'Season',
+      description: 'Leave blank if the ride runs year-round',
+      options: { collapsible: true, collapsed: true },
+    },
   ],
   fields: [
     defineField({
@@ -225,18 +246,24 @@ const ride = defineType({
       description: 'e.g., "Strava", "Details", "DCMTB" (defaults to "Details")',
     }),
     defineField({
-      name: 'inSeason',
-      title: 'Currently Running',
-      type: 'boolean',
-      description: 'Uncheck if this ride is not currently running (seasonal or on hiatus)',
-      initialValue: true,
+      name: 'seasonStart',
+      title: 'Season Start',
+      type: 'number',
+      fieldset: 'season',
+      options: {
+        list: MONTHS,
+      },
+      description: 'Month when ride season begins',
     }),
     defineField({
-      name: 'outOfSeasonNote',
-      title: 'Not Running Note',
-      type: 'string',
-      description: 'e.g., "Runs April–September" or "On hiatus"',
-      hidden: ({ parent }) => parent?.inSeason !== false,
+      name: 'seasonEnd',
+      title: 'Season End',
+      type: 'number',
+      fieldset: 'season',
+      options: {
+        list: MONTHS,
+      },
+      description: 'Month when ride season ends',
     }),
   ],
   preview: {
