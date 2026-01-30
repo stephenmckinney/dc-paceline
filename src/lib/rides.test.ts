@@ -118,6 +118,10 @@ describe('formatTime', () => {
       expect(() => formatTime('17')).toThrow('Invalid time format: "17"')
     })
 
+    it('throws on invalid time format', () => {
+      expect(() => formatTime('aa:bb')).toThrow('Invalid time format: "aa:bb"')
+    })
+
     it('throws on empty string', () => {
       expect(() => formatTime('')).toThrow('Invalid time format: ""')
     })
