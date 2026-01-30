@@ -213,8 +213,12 @@ const ride = defineType({
       name: 'time',
       title: 'Start Time',
       type: 'string',
-      description: 'e.g., "5:30 PM" or "8:00 AM"',
-      validation: (rule) => rule.required(),
+      description: '24-hour format, e.g., "17:30" or "08:00"',
+      validation: (rule) =>
+        rule.required().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+          name: '24-hour time',
+          invert: false,
+        }),
     }),
     defineField({
       name: 'pace',

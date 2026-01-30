@@ -68,6 +68,14 @@ function getSeasonNote(ride: RideExpanded): string | null {
   return `Runs ${monthNames[ride.seasonStart]}–${monthNames[ride.seasonEnd]}`
 }
 
+// Format 24-hour time (e.g., "18:00") to 12-hour (e.g., "6:00 PM")
+function formatTime(time: string): string {
+  const [hours, minutes] = time.split(':').map(Number)
+  const period = hours >= 12 ? 'PM' : 'AM'
+  const displayHours = hours % 12 || 12
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`
+}
+
 // Group rides by day of week
 const dayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 const dayLabels: Record<string, string> = {
@@ -105,7 +113,7 @@ const ridesByDay = dayOrder
         {group.rides.map((ride) => (
           <RideCard
             name={ride.name}
-            time={ride.time}
+            time={formatTime(ride.time)}
             location={ride.location}
             pace={ride.pace}
             description={ride.description}

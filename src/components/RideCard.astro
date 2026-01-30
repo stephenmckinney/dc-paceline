@@ -31,10 +31,12 @@ const filledDots = paceDots[pace] || 3
 <article class:list={['ride-card', { 'out-of-season': outOfSeason }]}>
   <div class="ride-header" data-ride-toggle>
     <div class="ride-info">
-      <h3 class="ride-title">{name}</h3>
-      {outOfSeason && seasonNote && (
-        <span class="season-badge">{seasonNote}</span>
-      )}
+      <div class="ride-title-row">
+        <h3 class="ride-title">{name}</h3>
+        {outOfSeason && seasonNote && (
+          <span class="season-badge">{seasonNote}</span>
+        )}
+      </div>
       <div class="ride-meta">
         <span class="ride-meta-item">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
