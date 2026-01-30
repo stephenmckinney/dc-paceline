@@ -1,9 +1,11 @@
 ---
+import type { PaceGrade } from '../types/sanity'
+
 interface Props {
   name: string
   time: string
   location: string
-  pace: 'A' | 'BB' | 'B' | 'C' | 'D'
+  pace: PaceGrade
   description?: string
   mapUrl?: string
   url?: string
@@ -76,11 +78,16 @@ const filledDots = paceDots[pace] || 3
 </article>
 
 <script>
-  // Handle card expansion
-  document.querySelectorAll('[data-ride-toggle]').forEach((header) => {
-    header.addEventListener('click', () => {
-      const card = header.closest('.ride-card')
-      card?.classList.toggle('expanded')
+  // Handle card expansion using event delegation
+  // Single listener handles all ride cards via bubbling
+  if (!document.documentElement.dataset.rideCardInit) {
+    document.documentElement.dataset.rideCardInit = 'true'
+    document.addEventListener('click', (event) => {
+      const toggle = (event.target as Element).closest('[data-ride-toggle]')
+      if (toggle) {
+        const card = toggle.closest('.ride-card')
+        card?.classList.toggle('expanded')
+      }
     })
-  })
+  }
 </script>
