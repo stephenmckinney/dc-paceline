@@ -57,7 +57,7 @@ export interface Ride {
   address?: string
   mapUrl?: string
   group?: SanityReference | Group
-  dayOfWeek: DayOfWeek
+  daysOfWeek: DayOfWeek[]
   time: string
   pace: PaceGrade
   description?: string

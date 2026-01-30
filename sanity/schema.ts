@@ -179,14 +179,14 @@ const ride = defineType({
       description: 'Google Maps link',
     }),
     defineField({
-      name: 'dayOfWeek',
-      title: 'Day of Week',
-      type: 'string',
+      name: 'daysOfWeek',
+      title: 'Days of Week',
+      type: 'array',
+      of: [{ type: 'string' }],
       options: {
         list: DAYS_OF_WEEK,
-        layout: 'radio',
       },
-      validation: (rule) => rule.required(),
+      validation: (rule) => rule.required().min(1),
     }),
     defineField({
       name: 'time',
@@ -242,15 +242,15 @@ const ride = defineType({
   preview: {
     select: {
       title: 'name',
-      day: 'dayOfWeek',
+      days: 'daysOfWeek',
       time: 'time',
       city: 'city.name',
     },
-    prepare({ title, day, time, city }) {
-      const dayLabel = day ? day.charAt(0).toUpperCase() + day.slice(1) : ''
+    prepare({ title, days, time, city }) {
+      const dayLabels = days?.map((d: string) => d.charAt(0).toUpperCase() + d.slice(1, 3)).join('/') || ''
       return {
         title,
-        subtitle: `${dayLabel} ${time}${city ? ` • ${city}` : ''}`,
+        subtitle: `${dayLabels} ${time}${city ? ` • ${city}` : ''}`,
       }
     },
   },

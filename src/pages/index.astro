@@ -10,10 +10,10 @@ let fetchError = false
 
 try {
   rides = await client.fetch<RideExpanded[]>(`
-    *[_type == "ride" && !(_id in path("drafts.**")) && inSeason != false] | order(dayOfWeek asc, time asc) {
+    *[_type == "ride" && !(_id in path("drafts.**")) && inSeason != false] | order(time asc) {
       _id,
       name,
-      dayOfWeek,
+      daysOfWeek,
       time,
       location,
       address,
@@ -56,7 +56,7 @@ const ridesByDay = dayOrder
   .map((day) => ({
     day,
     label: dayLabels[day],
-    rides: rides.filter((ride) => ride.dayOfWeek === day),
+    rides: rides.filter((ride) => ride.daysOfWeek?.includes(day)),
   }))
   .filter((group) => group.rides.length > 0)
 ---
