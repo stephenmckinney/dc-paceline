@@ -35,7 +35,12 @@ import CheckIcon from './icons/CheckIcon.astro'
       <div class="filter-chip-section">
         <span class="filter-chip-label">Pace</span>
         {PACE_GRADES.map((grade) => (
-          <button class="filter-chip filter-chip-pace active" data-filter-pace={grade} title={`${grade}: ${PACE_DESCRIPTIONS[grade]}`}>
+          <button
+            class="filter-chip filter-chip-pace active"
+            data-filter-pace={grade}
+            title={`${grade}: ${PACE_DESCRIPTIONS[grade]}`}
+            aria-label={`${grade}: ${PACE_DESCRIPTIONS[grade]}`}
+          >
             <span class="filter-pace-letter">{grade}</span>
             <div class="filter-pace-dots">
               {[1, 2, 3, 4, 5].map((dot) => (
