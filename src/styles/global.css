@@ -16,7 +16,8 @@
   --gray-500: #737373;
   --gray-600: #525252;
   --gray-900: #171717;
-  --accent: #E51937; /* DC flag red */
+  --accent: #E51937;
+  /* DC flag red */
 
   /* Brand colors */
   --strava-orange: #FC4C02;
@@ -262,7 +263,7 @@ body {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   padding: 8px 10px;
   background: var(--gray-50);
   border-radius: 4px;
@@ -714,6 +715,7 @@ body {
 }
 
 @media (min-width: 768px) {
+
   .header,
   .day-header,
   .ride-header,

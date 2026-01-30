@@ -66,13 +66,13 @@ const linkLabel = urlLabel || URL_TYPE_LABELS[urlType]
     </div>
   </div>
   <div class="ride-details">
+    {description && <p class="ride-description">{description}</p>}
     {address && (
       <div class="ride-address">
         <span class="ride-address-label">Start</span>
         <span class="ride-address-text">{address}</span>
       </div>
     )}
-    {description && <p class="ride-description">{description}</p>}
     <div class="ride-links">
       {mapUrl && (
         <a href={mapUrl} class="ride-link" target="_blank" rel="noopener noreferrer">
