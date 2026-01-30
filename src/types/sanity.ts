@@ -14,6 +14,9 @@ export const DAYS_OF_WEEK = [
 ] as const
 export type DayOfWeek = (typeof DAYS_OF_WEEK)[number]
 
+export const REGIONS = ['dc', 'va', 'md'] as const
+export type Region = (typeof REGIONS)[number]
+
 // Base type for Sanity references
 export interface SanityReference {
   _ref: string
@@ -31,6 +34,7 @@ export interface City {
   _type: 'city'
   name: string
   slug: SanitySlug
+  region: Region
 }
 
 export interface GroupType {

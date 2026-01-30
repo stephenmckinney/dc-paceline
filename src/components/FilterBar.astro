@@ -1,0 +1,215 @@
+---
+import { PACE_GRADES } from '../types/sanity'
+
+// Pace to dots mapping: A=5, BB=4, B=3, C=2, D=1
+const paceDots: Record<string, number> = {
+  'A': 5,
+  'BB': 4,
+  'B': 3,
+  'C': 2,
+  'D': 1,
+}
+---
+
+<div class="filter-bar" id="filter-bar">
+  <button class="filter-toggle" id="filter-toggle">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+    </svg>
+    <span>Filters</span>
+    <span class="filter-badge" id="filter-badge" style="display: none;">0</span>
+    <svg class="filter-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+  <div class="filter-panel" id="filter-panel">
+    <div class="filter-chip-row">
+      <div class="filter-chip-section">
+        <span class="filter-chip-label">Region</span>
+        <button class="filter-chip active" data-filter-region="dc">
+          <svg class="filter-check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          DC
+        </button>
+        <button class="filter-chip active" data-filter-region="va">
+          <svg class="filter-check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          VA
+        </button>
+        <button class="filter-chip active" data-filter-region="md">
+          <svg class="filter-check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          MD
+        </button>
+      </div>
+      <div class="filter-chip-divider"></div>
+      <div class="filter-chip-section">
+        <span class="filter-chip-label">Pace</span>
+        {PACE_GRADES.map((grade) => (
+          <button class="filter-chip filter-chip-pace active" data-filter-pace={grade}>
+            <span class="filter-pace-letter">{grade}</span>
+            <div class="filter-pace-dots">
+              {[1, 2, 3, 4, 5].map((dot) => (
+                <span class:list={['filter-pace-dot', { filled: dot <= paceDots[grade] }]}></span>
+              ))}
+            </div>
+          </button>
+        ))}
+      </div>
+      <div class="filter-chip-divider"></div>
+      <div class="filter-chip-section">
+        <button class="filter-chip" data-filter-toggle="hide-seasonal">
+          <svg class="filter-check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Hide seasonal
+        </button>
+      </div>
+    </div>
+    <div class="filter-footer">
+      <span class="filter-summary" id="filter-summary">Showing all rides</span>
+      <button class="filter-clear" id="filter-clear">Clear all</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Filter state
+  const state = {
+    regions: { dc: true, va: true, md: true },
+    paces: { A: true, BB: true, B: true, C: true, D: true },
+    hideSeasonal: false
+  }
+
+  // Elements
+  const filterBar = document.getElementById('filter-bar')
+  const filterToggle = document.getElementById('filter-toggle')
+  const filterBadge = document.getElementById('filter-badge')
+  const filterSummary = document.getElementById('filter-summary')
+  const filterClear = document.getElementById('filter-clear')
+
+  // Toggle panel
+  filterToggle?.addEventListener('click', () => {
+    filterBar?.classList.toggle('expanded')
+  })
+
+  // Region chips
+  document.querySelectorAll('[data-filter-region]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const region = (chip as HTMLElement).dataset.filterRegion as keyof typeof state.regions
+      state.regions[region] = !state.regions[region]
+      chip.classList.toggle('active', state.regions[region])
+      chip.classList.toggle('inactive', !state.regions[region])
+      applyFilters()
+    })
+  })
+
+  // Pace chips
+  document.querySelectorAll('[data-filter-pace]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const pace = (chip as HTMLElement).dataset.filterPace as keyof typeof state.paces
+      state.paces[pace] = !state.paces[pace]
+      chip.classList.toggle('active', state.paces[pace])
+      chip.classList.toggle('inactive', !state.paces[pace])
+      applyFilters()
+    })
+  })
+
+  // Hide seasonal toggle
+  document.querySelector('[data-filter-toggle="hide-seasonal"]')?.addEventListener('click', function() {
+    state.hideSeasonal = !state.hideSeasonal
+    this.classList.toggle('active', state.hideSeasonal)
+    applyFilters()
+  })
+
+  // Clear all
+  filterClear?.addEventListener('click', () => {
+    state.regions = { dc: true, va: true, md: true }
+    state.paces = { A: true, BB: true, B: true, C: true, D: true }
+    state.hideSeasonal = false
+    syncUI()
+    applyFilters()
+  })
+
+  function syncUI() {
+    document.querySelectorAll('[data-filter-region]').forEach(chip => {
+      const region = (chip as HTMLElement).dataset.filterRegion as keyof typeof state.regions
+      chip.classList.toggle('active', state.regions[region])
+      chip.classList.toggle('inactive', !state.regions[region])
+    })
+    document.querySelectorAll('[data-filter-pace]').forEach(chip => {
+      const pace = (chip as HTMLElement).dataset.filterPace as keyof typeof state.paces
+      chip.classList.toggle('active', state.paces[pace])
+      chip.classList.toggle('inactive', !state.paces[pace])
+    })
+    const seasonalChip = document.querySelector('[data-filter-toggle="hide-seasonal"]')
+    seasonalChip?.classList.toggle('active', state.hideSeasonal)
+  }
+
+  function updateBadge() {
+    let count = 0
+    if (!state.regions.dc) count++
+    if (!state.regions.va) count++
+    if (!state.regions.md) count++
+    if (!state.paces.A) count++
+    if (!state.paces.BB) count++
+    if (!state.paces.B) count++
+    if (!state.paces.C) count++
+    if (!state.paces.D) count++
+    if (state.hideSeasonal) count++
+
+    if (filterBadge) {
+      filterBadge.textContent = String(count)
+      filterBadge.style.display = count > 0 ? 'inline' : 'none'
+    }
+  }
+
+  function updateSummary() {
+    const visibleRides = document.querySelectorAll('.ride-card:not(.filtered-out)').length
+    const totalRides = document.querySelectorAll('.ride-card').length
+
+    if (filterSummary) {
+      if (visibleRides === totalRides) {
+        filterSummary.textContent = `Showing all ${totalRides} rides`
+      } else {
+        filterSummary.textContent = `Showing ${visibleRides} of ${totalRides} rides`
+      }
+    }
+  }
+
+  function applyFilters() {
+    const cards = document.querySelectorAll('.ride-card')
+
+    cards.forEach(card => {
+      const region = (card as HTMLElement).dataset.region as keyof typeof state.regions
+      const pace = (card as HTMLElement).dataset.pace as keyof typeof state.paces
+      const isSeasonal = (card as HTMLElement).dataset.seasonal === 'true'
+
+      const regionMatch = !region || state.regions[region]
+      const paceMatch = !pace || state.paces[pace]
+      const seasonalMatch = !state.hideSeasonal || !isSeasonal
+
+      card.classList.toggle('filtered-out', !(regionMatch && paceMatch && seasonalMatch))
+    })
+
+    // Hide empty day sections
+    document.querySelectorAll('.day-section').forEach(section => {
+      const visibleCards = section.querySelectorAll('.ride-card:not(.filtered-out)')
+      section.classList.toggle('filtered-out', visibleCards.length === 0)
+    })
+
+    // Show empty state if all filtered
+    const emptyState = document.getElementById('empty-filtered')
+    const allFiltered = document.querySelectorAll('.ride-card:not(.filtered-out)').length === 0
+    emptyState?.classList.toggle('visible', allFiltered)
+
+    updateBadge()
+    updateSummary()
+  }
+
+  // Initialize
+  updateSummary()
+</script>

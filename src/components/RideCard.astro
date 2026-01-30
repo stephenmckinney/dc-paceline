@@ -1,11 +1,12 @@
 ---
-import type { PaceGrade } from '../types/sanity'
+import type { PaceGrade, Region } from '../types/sanity'
 
 interface Props {
   name: string
   time: string
   location: string
   pace: PaceGrade
+  region?: Region
   description?: string
   mapUrl?: string
   url?: string
@@ -14,7 +15,7 @@ interface Props {
   seasonNote?: string | null
 }
 
-const { name, time, location, pace, description, mapUrl, url, urlLabel = 'Details', outOfSeason = false, seasonNote } = Astro.props
+const { name, time, location, pace, region, description, mapUrl, url, urlLabel = 'Details', outOfSeason = false, seasonNote } = Astro.props
 
 // Pace to dots mapping: A=5, BB=4, B=3, C=2, D=1
 const paceDots: Record<string, number> = {
@@ -28,7 +29,12 @@ const paceDots: Record<string, number> = {
 const filledDots = paceDots[pace] || 3
 ---
 
-<article class:list={['ride-card', { 'out-of-season': outOfSeason }]}>
+<article
+  class:list={['ride-card', { 'out-of-season': outOfSeason }]}
+  data-region={region}
+  data-pace={pace}
+  data-seasonal={outOfSeason ? 'true' : 'false'}
+>
   <div class="ride-header" data-ride-toggle>
     <div class="ride-info">
       <div class="ride-title-row">

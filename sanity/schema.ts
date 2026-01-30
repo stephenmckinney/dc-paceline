@@ -18,6 +18,12 @@ const PACE_GRADES = [
   { title: 'D - Beginner-friendly, very chill', value: 'D' },
 ]
 
+const REGIONS = [
+  { title: 'DC', value: 'dc' },
+  { title: 'Virginia', value: 'va' },
+  { title: 'Maryland', value: 'md' },
+]
+
 const MONTHS = [
   { title: 'January', value: 1 },
   { title: 'February', value: 2 },
@@ -57,10 +63,27 @@ const city = defineType({
       },
       validation: (rule) => rule.required(),
     }),
+    defineField({
+      name: 'region',
+      title: 'Region',
+      type: 'string',
+      options: {
+        list: REGIONS,
+        layout: 'radio',
+      },
+      validation: (rule) => rule.required(),
+    }),
   ],
   preview: {
     select: {
       title: 'name',
+      region: 'region',
+    },
+    prepare({ title, region }) {
+      return {
+        title,
+        subtitle: region?.toUpperCase(),
+      }
     },
   },
 })

@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import RideCard from '../components/RideCard.astro'
+import FilterBar from '../components/FilterBar.astro'
 import { client } from '../../sanity/client'
 import type { RideExpanded } from '../types/sanity'
 
@@ -21,7 +22,8 @@ try {
       city->{
         _id,
         name,
-        slug
+        slug,
+        region
       },
       group->{
         _id,
@@ -107,7 +109,12 @@ const ridesByDay = dayOrder
       <p>No rides yet. <a href="/admin">Add some in the Studio</a>.</p>
     </div>
   ) : (
-    ridesByDay.map((group) => (
+    <>
+      <FilterBar />
+      <div class="empty-filtered" id="empty-filtered">
+        <p>No rides match your filters. Try adjusting your selections.</p>
+      </div>
+      {ridesByDay.map((group) => (
       <section class="day-section">
         <h2 class="day-header">{group.label}</h2>
         {group.rides.map((ride) => (
@@ -116,6 +123,7 @@ const ridesByDay = dayOrder
             time={formatTime(ride.time)}
             location={ride.location}
             pace={ride.pace}
+            region={ride.city?.region}
             description={ride.description}
             mapUrl={ride.mapUrl}
             url={ride.url}
@@ -125,6 +133,7 @@ const ridesByDay = dayOrder
           />
         ))}
       </section>
-    ))
+      ))}
+    </>
   )}
 </Layout>
