@@ -3,7 +3,6 @@ import {
   DAYS_OF_WEEK as DAYS,
   PACE_GRADES as PACES,
   PACE_DESCRIPTIONS,
-  REGIONS as REGION_VALUES,
   MONTH_NAMES,
   URL_TYPES,
   URL_TYPE_LABELS,
@@ -24,7 +23,7 @@ const REGIONS = [
   { title: 'DC', value: 'dc' },
   { title: 'Virginia', value: 'va' },
   { title: 'Maryland', value: 'md' },
-] as const
+]
 
 const MONTHS = Object.entries(MONTH_NAMES).map(([value, title]) => ({
   title,
