@@ -108,4 +108,18 @@ describe('formatTime', () => {
       expect(formatTime('14:01')).toBe('2:01 PM')
     })
   })
+
+  describe('invalid input', () => {
+    it('throws on missing colon', () => {
+      expect(() => formatTime('1730')).toThrow('Invalid time format: "1730"')
+    })
+
+    it('throws on missing minutes', () => {
+      expect(() => formatTime('17')).toThrow('Invalid time format: "17"')
+    })
+
+    it('throws on empty string', () => {
+      expect(() => formatTime('')).toThrow('Invalid time format: ""')
+    })
+  })
 })

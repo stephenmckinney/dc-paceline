@@ -47,9 +47,19 @@ export function getSeasonNote(
  *
  * @param time - Time in "HH:MM" format (e.g., "17:30")
  * @returns Time in 12-hour format (e.g., "5:30 PM")
+ * @throws Error if time format is invalid (catches bad data at build time)
  */
 export function formatTime(time: string): string {
-  const [hours, minutes] = time.split(':').map(Number)
+  const parts = time.split(':')
+  if (parts.length !== 2) {
+    throw new Error(`Invalid time format: "${time}". Expected "HH:MM".`)
+  }
+
+  const [hours, minutes] = parts.map(Number)
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+    throw new Error(`Invalid time format: "${time}". Expected "HH:MM".`)
+  }
+
   const period = hours >= 12 ? 'PM' : 'AM'
   const displayHours = hours % 12 || 12
   return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`
