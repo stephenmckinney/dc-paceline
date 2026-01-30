@@ -1,5 +1,5 @@
 ---
-import { PACE_GRADES } from '../types/sanity'
+import { PACE_GRADES, PACE_DESCRIPTIONS } from '../types/sanity'
 
 // Pace to dots mapping: A=5, BB=4, B=3, C=2, D=1
 const paceDots: Record<string, number> = {
@@ -8,14 +8,6 @@ const paceDots: Record<string, number> = {
   'B': 3,
   'C': 2,
   'D': 1,
-}
-
-const paceDescriptions: Record<string, string> = {
-  'A': 'Race pace, hammerfest',
-  'BB': 'Fast group, drops happen',
-  'B': 'Moderate, regroups',
-  'C': 'Social pace, no-drop',
-  'D': 'Beginner-friendly, very chill',
 }
 ---
 
@@ -57,7 +49,7 @@ const paceDescriptions: Record<string, string> = {
       <div class="filter-chip-section">
         <span class="filter-chip-label">Pace</span>
         {PACE_GRADES.map((grade) => (
-          <button class="filter-chip filter-chip-pace active" data-filter-pace={grade} title={`${grade}: ${paceDescriptions[grade]}`}>
+          <button class="filter-chip filter-chip-pace active" data-filter-pace={grade} title={`${grade}: ${PACE_DESCRIPTIONS[grade]}`}>
             <span class="filter-pace-letter">{grade}</span>
             <div class="filter-pace-dots">
               {[1, 2, 3, 4, 5].map((dot) => (

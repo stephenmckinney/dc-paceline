@@ -3,6 +3,14 @@
 export const PACE_GRADES = ['A', 'BB', 'B', 'C', 'D'] as const
 export type PaceGrade = (typeof PACE_GRADES)[number]
 
+export const PACE_DESCRIPTIONS: Record<PaceGrade, string> = {
+  'A': 'Race pace, hammerfest',
+  'BB': 'Fast group, drops happen',
+  'B': 'Moderate, regroups',
+  'C': 'Social pace, no-drop',
+  'D': 'Beginner-friendly, very chill',
+}
+
 export const DAYS_OF_WEEK = [
   'monday',
   'tuesday',
