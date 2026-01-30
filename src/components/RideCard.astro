@@ -19,7 +19,7 @@ interface Props {
 
 const { name, time, location, pace, region, address, description, mapUrl, url, urlType = 'other', urlLabel, outOfSeason = false, seasonNote } = Astro.props
 
-const filledDots = PACE_DOTS[pace] || 3
+const filledDots = PACE_DOTS[pace]
 const paceTooltip = `${pace} pace: ${PACE_DESCRIPTIONS[pace] || ''}`
 const linkLabel = urlLabel || URL_TYPE_LABELS[urlType]
 ---
