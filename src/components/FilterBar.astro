@@ -151,14 +151,8 @@ const paceDots: Record<string, number> = {
 
   function updateBadge() {
     let count = 0
-    if (!state.regions.dc) count++
-    if (!state.regions.va) count++
-    if (!state.regions.md) count++
-    if (!state.paces.A) count++
-    if (!state.paces.BB) count++
-    if (!state.paces.B) count++
-    if (!state.paces.C) count++
-    if (!state.paces.D) count++
+    count += Object.values(state.regions).filter(active => !active).length
+    count += Object.values(state.paces).filter(active => !active).length
     if (state.hideSeasonal) count++
 
     if (filterBadge) {
@@ -170,12 +164,13 @@ const paceDots: Record<string, number> = {
   function updateSummary() {
     const visibleRides = document.querySelectorAll('.ride-card:not(.filtered-out)').length
     const totalRides = document.querySelectorAll('.ride-card').length
+    const rideWord = totalRides === 1 ? 'ride' : 'rides'
 
     if (filterSummary) {
       if (visibleRides === totalRides) {
-        filterSummary.textContent = `Showing all ${totalRides} rides`
+        filterSummary.textContent = `Showing all ${totalRides} ${rideWord}`
       } else {
-        filterSummary.textContent = `Showing ${visibleRides} of ${totalRides} rides`
+        filterSummary.textContent = `Showing ${visibleRides} of ${totalRides} ${rideWord}`
       }
     }
   }

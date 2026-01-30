@@ -61,9 +61,12 @@ function isInSeason(ride: RideExpanded): boolean {
   }
 }
 
-// Month names for display
-const monthNames = ['', 'January', 'February', 'March', 'April', 'May', 'June',
-                    'July', 'August', 'September', 'October', 'November', 'December']
+// Month names for display (1-indexed)
+const monthNames: Record<number, string> = {
+  1: 'January', 2: 'February', 3: 'March', 4: 'April',
+  5: 'May', 6: 'June', 7: 'July', 8: 'August',
+  9: 'September', 10: 'October', 11: 'November', 12: 'December',
+}
 
 function getSeasonNote(ride: RideExpanded): string | null {
   if (!ride.seasonStart || !ride.seasonEnd) return null
