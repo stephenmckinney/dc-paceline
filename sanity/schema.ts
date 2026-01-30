@@ -18,16 +18,165 @@ const PACE_GRADES = [
   { title: 'D - Beginner-friendly, very chill', value: 'D' },
 ]
 
+// ============================================
+// City
+// ============================================
+const city = defineType({
+  name: 'city',
+  title: 'City',
+  type: 'document',
+  fields: [
+    defineField({
+      name: 'name',
+      title: 'Name',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'name',
+        maxLength: 96,
+      },
+      validation: (rule) => rule.required(),
+    }),
+  ],
+  preview: {
+    select: {
+      title: 'name',
+    },
+  },
+})
+
+// ============================================
+// Group Type
+// ============================================
+const groupType = defineType({
+  name: 'groupType',
+  title: 'Group Type',
+  type: 'document',
+  fields: [
+    defineField({
+      name: 'name',
+      title: 'Name',
+      type: 'string',
+      description: 'e.g., "Club", "Shop", "Informal"',
+      validation: (rule) => rule.required(),
+    }),
+  ],
+  preview: {
+    select: {
+      title: 'name',
+    },
+  },
+})
+
+// ============================================
+// Group
+// ============================================
+const group = defineType({
+  name: 'group',
+  title: 'Group',
+  type: 'document',
+  fields: [
+    defineField({
+      name: 'name',
+      title: 'Name',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'groupType',
+      title: 'Group Type',
+      type: 'reference',
+      to: [{ type: 'groupType' }],
+    }),
+    defineField({
+      name: 'url',
+      title: 'Website URL',
+      type: 'url',
+      description: 'Main website or homepage for the group',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'ridesUrl',
+      title: 'Rides URL',
+      type: 'url',
+      description: 'Direct link to the group\'s ride calendar or schedule',
+    }),
+  ],
+  preview: {
+    select: {
+      title: 'name',
+      groupType: 'groupType.name',
+    },
+    prepare({ title, groupType }) {
+      return {
+        title,
+        subtitle: groupType,
+      }
+    },
+  },
+})
+
+// ============================================
+// Ride
+// ============================================
 const ride = defineType({
   name: 'ride',
   title: 'Ride',
   type: 'document',
+  fieldsets: [
+    {
+      name: 'startLocation',
+      title: 'Start Location',
+      options: { collapsible: false },
+    },
+  ],
   fields: [
     defineField({
       name: 'name',
       title: 'Ride Name',
       type: 'string',
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'city',
+      title: 'City',
+      type: 'reference',
+      to: [{ type: 'city' }],
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'group',
+      title: 'Group',
+      type: 'reference',
+      to: [{ type: 'group' }],
+      description: 'Optional - the club or group that organizes this ride',
+    }),
+    defineField({
+      name: 'location',
+      title: 'Location',
+      type: 'string',
+      fieldset: 'startLocation',
+      description: 'e.g., "BicycleSpace, H St NE"',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'address',
+      title: 'Address',
+      type: 'string',
+      fieldset: 'startLocation',
+      description: 'Full street address (optional)',
+    }),
+    defineField({
+      name: 'mapUrl',
+      title: 'Map URL',
+      type: 'url',
+      fieldset: 'startLocation',
+      description: 'Google Maps link',
     }),
     defineField({
       name: 'dayOfWeek',
@@ -45,19 +194,6 @@ const ride = defineType({
       type: 'string',
       description: 'e.g., "5:30 PM" or "8:00 AM"',
       validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'location',
-      title: 'Start Location',
-      type: 'string',
-      description: 'e.g., "BicycleSpace, H St NE"',
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'mapUrl',
-      title: 'Map URL',
-      type: 'url',
-      description: 'Google Maps or similar link to start location',
     }),
     defineField({
       name: 'pace',
@@ -90,16 +226,16 @@ const ride = defineType({
     }),
     defineField({
       name: 'inSeason',
-      title: 'In Season',
+      title: 'Currently Running',
       type: 'boolean',
-      description: 'Uncheck for rides that only run part of the year',
+      description: 'Uncheck if this ride is not currently running (seasonal or on hiatus)',
       initialValue: true,
     }),
     defineField({
       name: 'outOfSeasonNote',
-      title: 'Out of Season Note',
+      title: 'Not Running Note',
       type: 'string',
-      description: 'e.g., "Runs April–September"',
+      description: 'e.g., "Runs April–September" or "On hiatus"',
       hidden: ({ parent }) => parent?.inSeason !== false,
     }),
   ],
@@ -108,12 +244,13 @@ const ride = defineType({
       title: 'name',
       day: 'dayOfWeek',
       time: 'time',
+      city: 'city.name',
     },
-    prepare({ title, day, time }) {
+    prepare({ title, day, time, city }) {
       const dayLabel = day ? day.charAt(0).toUpperCase() + day.slice(1) : ''
       return {
         title,
-        subtitle: `${dayLabel} ${time}`,
+        subtitle: `${dayLabel} ${time}${city ? ` • ${city}` : ''}`,
       }
     },
   },
@@ -126,4 +263,4 @@ const ride = defineType({
   ],
 })
 
-export const schemaTypes = [ride]
+export const schemaTypes = [city, groupType, group, ride]

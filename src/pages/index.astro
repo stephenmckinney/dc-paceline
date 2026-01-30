@@ -2,23 +2,35 @@
 import Layout from '../layouts/Layout.astro'
 import RideCard from '../components/RideCard.astro'
 import { client } from '../../sanity/client'
-import type { Ride } from '../types/sanity'
+import type { RideExpanded } from '../types/sanity'
 
-// Fetch published rides from Sanity (excludes drafts)
-let rides: Ride[] = []
+// Fetch published rides from Sanity (excludes drafts, only in-season)
+let rides: RideExpanded[] = []
 let fetchError = false
 
 try {
-  rides = await client.fetch<Ride[]>(`
-    *[_type == "ride" && !(_id in path("drafts.**"))] | order(dayOfWeek asc, time asc) {
+  rides = await client.fetch<RideExpanded[]>(`
+    *[_type == "ride" && !(_id in path("drafts.**")) && inSeason != false] | order(dayOfWeek asc, time asc) {
       _id,
       name,
       dayOfWeek,
       time,
       location,
+      address,
+      mapUrl,
+      city->{
+        _id,
+        name,
+        slug
+      },
+      group->{
+        _id,
+        name,
+        url,
+        ridesUrl
+      },
       pace,
       description,
-      mapUrl,
       url,
       urlLabel
     }
