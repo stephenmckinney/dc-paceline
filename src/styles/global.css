@@ -324,6 +324,18 @@ body {
   background: var(--gray-50);
 }
 
+.ride-link.strava {
+  background: #FC4C02;
+  color: var(--white);
+  border-color: #FC4C02;
+}
+
+.ride-link.facebook {
+  background: #1877F2;
+  color: var(--white);
+  border-color: #1877F2;
+}
+
 /* Footer */
 .footer {
   padding: 32px 16px;
@@ -677,6 +689,16 @@ body {
   .ride-link.secondary:hover {
     border-color: var(--gray-900);
     background: transparent;
+  }
+
+  .ride-link.strava:hover {
+    background: #E34402;
+    border-color: #E34402;
+  }
+
+  .ride-link.facebook:hover {
+    background: #1565D8;
+    border-color: #1565D8;
   }
 
   .footer {

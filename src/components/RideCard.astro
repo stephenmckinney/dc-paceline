@@ -89,7 +89,7 @@ const filledDots = paceDots[pace] || 3
         </a>
       )}
       {url && (
-        <a href={url} class="ride-link secondary" target="_blank" rel="noopener noreferrer">
+        <a href={url} class:list={['ride-link', 'secondary', { 'strava': urlLabel === 'Strava', 'facebook': urlLabel === 'Facebook' }]} target="_blank" rel="noopener noreferrer">
           {urlLabel}
         </a>
       )}
