@@ -9,6 +9,14 @@ const paceDots: Record<string, number> = {
   'C': 2,
   'D': 1,
 }
+
+const paceDescriptions: Record<string, string> = {
+  'A': 'Race pace, hammerfest',
+  'BB': 'Fast group, drops happen',
+  'B': 'Moderate, regroups',
+  'C': 'Social pace, no-drop',
+  'D': 'Beginner-friendly, very chill',
+}
 ---
 
 <div class="filter-bar" id="filter-bar">
@@ -49,7 +57,7 @@ const paceDots: Record<string, number> = {
       <div class="filter-chip-section">
         <span class="filter-chip-label">Pace</span>
         {PACE_GRADES.map((grade) => (
-          <button class="filter-chip filter-chip-pace active" data-filter-pace={grade}>
+          <button class="filter-chip filter-chip-pace active" data-filter-pace={grade} title={`${grade}: ${paceDescriptions[grade]}`}>
             <span class="filter-pace-letter">{grade}</span>
             <div class="filter-pace-dots">
               {[1, 2, 3, 4, 5].map((dot) => (

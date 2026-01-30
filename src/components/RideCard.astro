@@ -27,7 +27,16 @@ const paceDots: Record<string, number> = {
   'D': 1,
 }
 
+const paceDescriptions: Record<string, string> = {
+  'A': 'Race pace, hammerfest',
+  'BB': 'Fast group, drops happen',
+  'B': 'Moderate, regroups',
+  'C': 'Social pace, no-drop',
+  'D': 'Beginner-friendly, very chill',
+}
+
 const filledDots = paceDots[pace] || 3
+const paceTooltip = `${pace} pace: ${paceDescriptions[pace] || ''}`
 ---
 
 <article
@@ -60,7 +69,7 @@ const filledDots = paceDots[pace] || 3
       </div>
     </div>
     <div class="ride-right">
-      <div class="pace-rating">
+      <div class="pace-rating" title={paceTooltip}>
         {[1, 2, 3, 4, 5].map((dot) => (
           <span class:list={['pace-dot', { filled: dot <= filledDots }]}></span>
         ))}
