@@ -7,6 +7,7 @@ interface Props {
   location: string
   pace: PaceGrade
   region?: Region
+  address?: string
   description?: string
   mapUrl?: string
   url?: string
@@ -15,7 +16,7 @@ interface Props {
   seasonNote?: string | null
 }
 
-const { name, time, location, pace, region, description, mapUrl, url, urlLabel = 'Details', outOfSeason = false, seasonNote } = Astro.props
+const { name, time, location, pace, region, address, description, mapUrl, url, urlLabel = 'Details', outOfSeason = false, seasonNote } = Astro.props
 
 // Pace to dots mapping: A=5, BB=4, B=3, C=2, D=1
 const paceDots: Record<string, number> = {
@@ -71,6 +72,12 @@ const filledDots = paceDots[pace] || 3
     </div>
   </div>
   <div class="ride-details">
+    {address && (
+      <div class="ride-address">
+        <span class="ride-address-label">Start</span>
+        <span class="ride-address-text">{address}</span>
+      </div>
+    )}
     {description && <p class="ride-description">{description}</p>}
     <div class="ride-links">
       {mapUrl && (

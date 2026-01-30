@@ -251,6 +251,31 @@ body {
   display: block;
 }
 
+.ride-address {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: var(--gray-50);
+  border-radius: 4px;
+}
+
+.ride-address-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.ride-address-text {
+  font-size: 0.8125rem;
+  color: var(--gray-600);
+  user-select: all;
+}
+
 .ride-description {
   color: var(--gray-600);
   line-height: 1.7;
