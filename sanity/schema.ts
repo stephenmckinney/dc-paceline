@@ -1,27 +1,183 @@
 import { defineType, defineField } from 'sanity'
+import {
+  DAYS_OF_WEEK as DAYS,
+  PACE_GRADES as PACES,
+  PACE_DESCRIPTIONS,
+  MONTH_NAMES,
+  URL_TYPES,
+  URL_TYPE_LABELS,
+} from '../src/types/sanity'
 
-const DAYS_OF_WEEK = [
-  { title: 'Monday', value: 'monday' },
-  { title: 'Tuesday', value: 'tuesday' },
-  { title: 'Wednesday', value: 'wednesday' },
-  { title: 'Thursday', value: 'thursday' },
-  { title: 'Friday', value: 'friday' },
-  { title: 'Saturday', value: 'saturday' },
-  { title: 'Sunday', value: 'sunday' },
+// Transform shared constants to Sanity list format
+const DAYS_OF_WEEK = DAYS.map((day) => ({
+  title: day.charAt(0).toUpperCase() + day.slice(1),
+  value: day,
+}))
+
+const PACE_GRADES = PACES.map((pace) => ({
+  title: `${pace} - ${PACE_DESCRIPTIONS[pace]}`,
+  value: pace,
+}))
+
+const REGIONS = [
+  { title: 'DC', value: 'dc' },
+  { title: 'Virginia', value: 'va' },
+  { title: 'Maryland', value: 'md' },
 ]
 
-const PACE_GRADES = [
-  { title: 'A - Race pace, hammerfest', value: 'A' },
-  { title: 'BB - Fast group, drops happen', value: 'BB' },
-  { title: 'B - Moderate, regroups', value: 'B' },
-  { title: 'C - Social pace, no-drop', value: 'C' },
-  { title: 'D - Beginner-friendly, very chill', value: 'D' },
-]
+const MONTHS = Object.entries(MONTH_NAMES).map(([value, title]) => ({
+  title,
+  value: Number(value),
+}))
 
+const LINK_TYPES = URL_TYPES.map((type) => ({
+  title: URL_TYPE_LABELS[type],
+  value: type,
+}))
+
+// Validation pattern for 24-hour time format (HH:MM)
+const TIME_24H_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/
+
+// ============================================
+// City
+// ============================================
+const city = defineType({
+  name: 'city',
+  title: 'City',
+  type: 'document',
+  fields: [
+    defineField({
+      name: 'name',
+      title: 'Name',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'name',
+        maxLength: 96,
+      },
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'region',
+      title: 'Region',
+      type: 'string',
+      options: {
+        list: REGIONS,
+        layout: 'radio',
+      },
+      validation: (rule) => rule.required(),
+    }),
+  ],
+  preview: {
+    select: {
+      title: 'name',
+      region: 'region',
+    },
+    prepare({ title, region }) {
+      return {
+        title,
+        subtitle: region?.toUpperCase(),
+      }
+    },
+  },
+})
+
+// ============================================
+// Group Type
+// ============================================
+const groupType = defineType({
+  name: 'groupType',
+  title: 'Group Type',
+  type: 'document',
+  fields: [
+    defineField({
+      name: 'name',
+      title: 'Name',
+      type: 'string',
+      description: 'e.g., "Club", "Shop", "Informal"',
+      validation: (rule) => rule.required(),
+    }),
+  ],
+  preview: {
+    select: {
+      title: 'name',
+    },
+  },
+})
+
+// ============================================
+// Group
+// ============================================
+const group = defineType({
+  name: 'group',
+  title: 'Group',
+  type: 'document',
+  fields: [
+    defineField({
+      name: 'name',
+      title: 'Name',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'groupType',
+      title: 'Group Type',
+      type: 'reference',
+      to: [{ type: 'groupType' }],
+    }),
+    defineField({
+      name: 'url',
+      title: 'Website URL',
+      type: 'url',
+      description: 'Main website or homepage for the group',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'ridesUrl',
+      title: 'Rides URL',
+      type: 'url',
+      description: 'Direct link to the group\'s ride calendar or schedule',
+    }),
+  ],
+  preview: {
+    select: {
+      title: 'name',
+      groupType: 'groupType.name',
+    },
+    prepare({ title, groupType }) {
+      return {
+        title,
+        subtitle: groupType,
+      }
+    },
+  },
+})
+
+// ============================================
+// Ride
+// ============================================
 const ride = defineType({
   name: 'ride',
   title: 'Ride',
   type: 'document',
+  fieldsets: [
+    {
+      name: 'startLocation',
+      title: 'Start Location',
+      options: { collapsible: false },
+    },
+    {
+      name: 'season',
+      title: 'Season',
+      description: 'Leave blank if the ride runs year-round',
+      options: { collapsible: true, collapsed: true },
+    },
+  ],
   fields: [
     defineField({
       name: 'name',
@@ -30,34 +186,61 @@ const ride = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'dayOfWeek',
-      title: 'Day of Week',
-      type: 'string',
-      options: {
-        list: DAYS_OF_WEEK,
-        layout: 'radio',
-      },
+      name: 'city',
+      title: 'City',
+      type: 'reference',
+      to: [{ type: 'city' }],
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'time',
-      title: 'Start Time',
-      type: 'string',
-      description: 'e.g., "5:30 PM" or "8:00 AM"',
-      validation: (rule) => rule.required(),
+      name: 'group',
+      title: 'Group',
+      type: 'reference',
+      to: [{ type: 'group' }],
+      description: 'Optional - the club or group that organizes this ride',
     }),
     defineField({
       name: 'location',
-      title: 'Start Location',
+      title: 'Location',
       type: 'string',
+      fieldset: 'startLocation',
       description: 'e.g., "BicycleSpace, H St NE"',
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'address',
+      title: 'Address',
+      type: 'string',
+      fieldset: 'startLocation',
+      description: 'Full street address (optional)',
     }),
     defineField({
       name: 'mapUrl',
       title: 'Map URL',
       type: 'url',
-      description: 'Google Maps or similar link to start location',
+      fieldset: 'startLocation',
+      description: 'Google Maps link',
+    }),
+    defineField({
+      name: 'daysOfWeek',
+      title: 'Days of Week',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: {
+        list: DAYS_OF_WEEK,
+      },
+      validation: (rule) => rule.required().min(1),
+    }),
+    defineField({
+      name: 'time',
+      title: 'Start Time',
+      type: 'string',
+      description: '24-hour format, e.g., "17:30" or "08:00"',
+      validation: (rule) =>
+        rule.required().regex(TIME_24H_PATTERN, {
+          name: '24-hour time',
+          invert: false,
+        }),
     }),
     defineField({
       name: 'pace',
@@ -83,37 +266,57 @@ const ride = defineType({
       description: 'Link to ride details, Strava club, or organizer page',
     }),
     defineField({
+      name: 'urlType',
+      title: 'Link Type',
+      type: 'string',
+      options: {
+        list: LINK_TYPES,
+        layout: 'radio',
+      },
+      initialValue: 'other',
+      description: 'Platform type for button styling',
+    }),
+    defineField({
       name: 'urlLabel',
       title: 'URL Button Label',
       type: 'string',
-      description: 'e.g., "Strava", "Details", "DCMTB" (defaults to "Details")',
+      description: 'Custom label (optional, defaults based on link type)',
     }),
     defineField({
-      name: 'inSeason',
-      title: 'In Season',
-      type: 'boolean',
-      description: 'Uncheck for rides that only run part of the year',
-      initialValue: true,
+      name: 'seasonStart',
+      title: 'Season Start',
+      type: 'number',
+      fieldset: 'season',
+      options: {
+        list: MONTHS,
+      },
+      description: 'Month when ride season begins',
+      validation: (rule) => rule.integer().min(1).max(12),
     }),
     defineField({
-      name: 'outOfSeasonNote',
-      title: 'Out of Season Note',
-      type: 'string',
-      description: 'e.g., "Runs April–September"',
-      hidden: ({ parent }) => parent?.inSeason !== false,
+      name: 'seasonEnd',
+      title: 'Season End',
+      type: 'number',
+      fieldset: 'season',
+      options: {
+        list: MONTHS,
+      },
+      description: 'Month when ride season ends',
+      validation: (rule) => rule.integer().min(1).max(12),
     }),
   ],
   preview: {
     select: {
       title: 'name',
-      day: 'dayOfWeek',
+      days: 'daysOfWeek',
       time: 'time',
+      city: 'city.name',
     },
-    prepare({ title, day, time }) {
-      const dayLabel = day ? day.charAt(0).toUpperCase() + day.slice(1) : ''
+    prepare({ title, days, time, city }) {
+      const dayLabels = days?.map((d: string) => d.charAt(0).toUpperCase() + d.slice(1, 3)).join('/') || ''
       return {
         title,
-        subtitle: `${dayLabel} ${time}`,
+        subtitle: `${dayLabels} ${time}${city ? ` • ${city}` : ''}`,
       }
     },
   },
@@ -126,4 +329,4 @@ const ride = defineType({
   ],
 })
 
-export const schemaTypes = [ride]
+export const schemaTypes = [city, groupType, group, ride]

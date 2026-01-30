@@ -1,0 +1,242 @@
+---
+import { PACE_GRADES, PACE_DESCRIPTIONS, PACE_DOTS } from '../types/sanity'
+import CheckIcon from './icons/CheckIcon.astro'
+---
+
+<div class="filter-bar" id="filter-bar">
+  <button class="filter-toggle" id="filter-toggle">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+    </svg>
+    <span>Filters</span>
+    <span class="filter-badge" id="filter-badge" style="display: none;">0</span>
+    <svg class="filter-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+  <div class="filter-panel" id="filter-panel">
+    <div class="filter-chip-row">
+      <div class="filter-chip-section">
+        <span class="filter-chip-label">Region</span>
+        <button class="filter-chip active" data-filter-region="dc">
+          <CheckIcon class="filter-check-icon" />
+          DC
+        </button>
+        <button class="filter-chip active" data-filter-region="va">
+          <CheckIcon class="filter-check-icon" />
+          VA
+        </button>
+        <button class="filter-chip active" data-filter-region="md">
+          <CheckIcon class="filter-check-icon" />
+          MD
+        </button>
+      </div>
+      <div class="filter-chip-divider"></div>
+      <div class="filter-chip-section">
+        <span class="filter-chip-label">Pace</span>
+        {PACE_GRADES.map((grade) => (
+          <button
+            class="filter-chip filter-chip-pace active"
+            data-filter-pace={grade}
+            title={`${grade}: ${PACE_DESCRIPTIONS[grade]}`}
+            aria-label={`${grade}: ${PACE_DESCRIPTIONS[grade]}`}
+          >
+            <span class="filter-pace-letter">{grade}</span>
+            <div class="filter-pace-dots">
+              {[1, 2, 3, 4, 5].map((dot) => (
+                <span class:list={['filter-pace-dot', { filled: dot <= PACE_DOTS[grade] }]}></span>
+              ))}
+            </div>
+          </button>
+        ))}
+      </div>
+      <div class="filter-chip-divider"></div>
+      <div class="filter-chip-section">
+        <button class="filter-chip" data-filter-toggle="hide-seasonal">
+          <CheckIcon class="filter-check-icon" />
+          Hide seasonal
+        </button>
+      </div>
+    </div>
+    <div class="filter-footer">
+      <span class="filter-summary" id="filter-summary">Showing all rides</span>
+      <button class="filter-clear" id="filter-clear">Clear all</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Type definitions
+  type RegionKey = 'dc' | 'va' | 'md'
+  type PaceKey = 'A' | 'BB' | 'B' | 'C' | 'D'
+
+  interface FilterState {
+    regions: Record<RegionKey, boolean>
+    paces: Record<PaceKey, boolean>
+    hideSeasonal: boolean
+  }
+
+  // Data attribute selectors (constants to avoid magic strings)
+  const SELECTORS = {
+    filterRegion: '[data-filter-region]',
+    filterPace: '[data-filter-pace]',
+    filterToggle: '[data-filter-toggle="hide-seasonal"]',
+    rideCard: '.ride-card',
+    daySection: '.day-section',
+  } as const
+
+  // Type guards
+  function isValidRegion(value: string | undefined): value is RegionKey {
+    return value === 'dc' || value === 'va' || value === 'md'
+  }
+
+  function isValidPace(value: string | undefined): value is PaceKey {
+    return value === 'A' || value === 'BB' || value === 'B' || value === 'C' || value === 'D'
+  }
+
+  // Filter state
+  const state: FilterState = {
+    regions: { dc: true, va: true, md: true },
+    paces: { A: true, BB: true, B: true, C: true, D: true },
+    hideSeasonal: false
+  }
+
+  // Default state for reset
+  const defaultState: FilterState = {
+    regions: { dc: true, va: true, md: true },
+    paces: { A: true, BB: true, B: true, C: true, D: true },
+    hideSeasonal: false
+  }
+
+  // Elements
+  const filterBar = document.getElementById('filter-bar')
+  const filterToggle = document.getElementById('filter-toggle')
+  const filterBadge = document.getElementById('filter-badge')
+  const filterSummary = document.getElementById('filter-summary')
+  const filterClear = document.getElementById('filter-clear')
+
+  // Toggle panel
+  filterToggle?.addEventListener('click', () => {
+    filterBar?.classList.toggle('expanded')
+  })
+
+  // Region chips
+  document.querySelectorAll<HTMLElement>(SELECTORS.filterRegion).forEach(chip => {
+    chip.addEventListener('click', () => {
+      const region = chip.dataset.filterRegion
+      if (!isValidRegion(region)) return
+
+      state.regions[region] = !state.regions[region]
+      chip.classList.toggle('active', state.regions[region])
+      chip.classList.toggle('inactive', !state.regions[region])
+      applyFilters()
+    })
+  })
+
+  // Pace chips
+  document.querySelectorAll<HTMLElement>(SELECTORS.filterPace).forEach(chip => {
+    chip.addEventListener('click', () => {
+      const pace = chip.dataset.filterPace
+      if (!isValidPace(pace)) return
+
+      state.paces[pace] = !state.paces[pace]
+      chip.classList.toggle('active', state.paces[pace])
+      chip.classList.toggle('inactive', !state.paces[pace])
+      applyFilters()
+    })
+  })
+
+  // Hide seasonal toggle
+  document.querySelector<HTMLElement>(SELECTORS.filterToggle)?.addEventListener('click', function() {
+    state.hideSeasonal = !state.hideSeasonal
+    this.classList.toggle('active', state.hideSeasonal)
+    applyFilters()
+  })
+
+  // Clear all
+  filterClear?.addEventListener('click', () => {
+    Object.assign(state.regions, defaultState.regions)
+    Object.assign(state.paces, defaultState.paces)
+    state.hideSeasonal = defaultState.hideSeasonal
+    syncUI()
+    applyFilters()
+  })
+
+  function syncUI() {
+    document.querySelectorAll<HTMLElement>(SELECTORS.filterRegion).forEach(chip => {
+      const region = chip.dataset.filterRegion
+      if (!isValidRegion(region)) return
+
+      chip.classList.toggle('active', state.regions[region])
+      chip.classList.toggle('inactive', !state.regions[region])
+    })
+    document.querySelectorAll<HTMLElement>(SELECTORS.filterPace).forEach(chip => {
+      const pace = chip.dataset.filterPace
+      if (!isValidPace(pace)) return
+
+      chip.classList.toggle('active', state.paces[pace])
+      chip.classList.toggle('inactive', !state.paces[pace])
+    })
+    const seasonalChip = document.querySelector(SELECTORS.filterToggle)
+    seasonalChip?.classList.toggle('active', state.hideSeasonal)
+  }
+
+  function updateBadge() {
+    let count = 0
+    count += Object.values(state.regions).filter(active => !active).length
+    count += Object.values(state.paces).filter(active => !active).length
+    if (state.hideSeasonal) count++
+
+    if (filterBadge) {
+      filterBadge.textContent = String(count)
+      filterBadge.style.display = count > 0 ? 'inline' : 'none'
+    }
+  }
+
+  function updateSummary() {
+    const visibleRides = document.querySelectorAll(`${SELECTORS.rideCard}:not(.filtered-out)`).length
+    const totalRides = document.querySelectorAll(SELECTORS.rideCard).length
+    const rideWord = totalRides === 1 ? 'ride' : 'rides'
+
+    if (filterSummary) {
+      if (visibleRides === totalRides) {
+        filterSummary.textContent = `Showing all ${totalRides} ${rideWord}`
+      } else {
+        filterSummary.textContent = `Showing ${visibleRides} of ${totalRides} ${rideWord}`
+      }
+    }
+  }
+
+  function applyFilters() {
+    const cards = document.querySelectorAll<HTMLElement>(SELECTORS.rideCard)
+
+    cards.forEach(card => {
+      const region = card.dataset.region
+      const pace = card.dataset.pace
+      const isSeasonal = card.dataset.seasonal === 'true'
+
+      const regionMatch = !region || (isValidRegion(region) && state.regions[region])
+      const paceMatch = !pace || (isValidPace(pace) && state.paces[pace])
+      const seasonalMatch = !state.hideSeasonal || !isSeasonal
+
+      card.classList.toggle('filtered-out', !(regionMatch && paceMatch && seasonalMatch))
+    })
+
+    // Hide empty day sections
+    document.querySelectorAll(SELECTORS.daySection).forEach(section => {
+      const visibleCards = section.querySelectorAll(`${SELECTORS.rideCard}:not(.filtered-out)`)
+      section.classList.toggle('filtered-out', visibleCards.length === 0)
+    })
+
+    // Show empty state if all filtered
+    const emptyState = document.getElementById('empty-filtered')
+    const allFiltered = document.querySelectorAll(`${SELECTORS.rideCard}:not(.filtered-out)`).length === 0
+    emptyState?.classList.toggle('visible', allFiltered)
+
+    updateBadge()
+    updateSummary()
+  }
+
+  // Initialize
+  updateSummary()
+</script>

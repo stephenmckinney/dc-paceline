@@ -1,35 +1,43 @@
 ---
-import type { PaceGrade } from '../types/sanity'
+import { PACE_DESCRIPTIONS, PACE_DOTS, URL_TYPE_LABELS, type PaceGrade, type Region, type UrlType } from '../types/sanity'
 
 interface Props {
   name: string
   time: string
   location: string
   pace: PaceGrade
+  region?: Region
+  address?: string
   description?: string
   mapUrl?: string
   url?: string
+  urlType?: UrlType
   urlLabel?: string
+  outOfSeason?: boolean
+  seasonNote?: string | null
 }
 
-const { name, time, location, pace, description, mapUrl, url, urlLabel = 'Details' } = Astro.props
+const { name, time, location, pace, region, address, description, mapUrl, url, urlType = 'other', urlLabel, outOfSeason = false, seasonNote } = Astro.props
 
-// Pace to dots mapping: A=5, BB=4, B=3, C=2, D=1
-const paceDots: Record<string, number> = {
-  'A': 5,
-  'BB': 4,
-  'B': 3,
-  'C': 2,
-  'D': 1,
-}
-
-const filledDots = paceDots[pace] || 3
+const filledDots = PACE_DOTS[pace]
+const paceTooltip = `${pace} pace: ${PACE_DESCRIPTIONS[pace] || ''}`
+const linkLabel = urlLabel || URL_TYPE_LABELS[urlType]
 ---
 
-<article class="ride-card">
+<article
+  class:list={['ride-card', { 'out-of-season': outOfSeason }]}
+  data-region={region}
+  data-pace={pace}
+  data-seasonal={outOfSeason ? 'true' : 'false'}
+>
   <div class="ride-header" data-ride-toggle>
     <div class="ride-info">
-      <h3 class="ride-title">{name}</h3>
+      <div class="ride-title-row">
+        <h3 class="ride-title">{name}</h3>
+        {outOfSeason && seasonNote && (
+          <span class="season-badge">{seasonNote}</span>
+        )}
+      </div>
       <div class="ride-meta">
         <span class="ride-meta-item">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,7 +54,7 @@ const filledDots = paceDots[pace] || 3
       </div>
     </div>
     <div class="ride-right">
-      <div class="pace-rating">
+      <div class="pace-rating" title={paceTooltip}>
         {[1, 2, 3, 4, 5].map((dot) => (
           <span class:list={['pace-dot', { filled: dot <= filledDots }]}></span>
         ))}
@@ -59,6 +67,12 @@ const filledDots = paceDots[pace] || 3
   </div>
   <div class="ride-details">
     {description && <p class="ride-description">{description}</p>}
+    {address && (
+      <div class="ride-address">
+        <span class="ride-address-label">Start</span>
+        <span class="ride-address-text">{address}</span>
+      </div>
+    )}
     <div class="ride-links">
       {mapUrl && (
         <a href={mapUrl} class="ride-link" target="_blank" rel="noopener noreferrer">
@@ -69,8 +83,8 @@ const filledDots = paceDots[pace] || 3
         </a>
       )}
       {url && (
-        <a href={url} class="ride-link secondary" target="_blank" rel="noopener noreferrer">
-          {urlLabel}
+        <a href={url} class:list={['ride-link', 'secondary', { 'strava': urlType === 'strava', 'facebook': urlType === 'facebook' }]} target="_blank" rel="noopener noreferrer">
+          {linkLabel}
         </a>
       )}
     </div>

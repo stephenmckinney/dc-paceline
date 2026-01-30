@@ -1,26 +1,44 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import RideCard from '../components/RideCard.astro'
+import FilterBar from '../components/FilterBar.astro'
 import { client } from '../../sanity/client'
-import type { Ride } from '../types/sanity'
+import type { RideExpanded } from '../types/sanity'
+import { isInSeason, getSeasonNote, formatTime } from '../lib/rides'
 
-// Fetch published rides from Sanity (excludes drafts)
-let rides: Ride[] = []
+// Fetch all published rides from Sanity (excludes drafts)
+let rides: RideExpanded[] = []
 let fetchError = false
 
 try {
-  rides = await client.fetch<Ride[]>(`
-    *[_type == "ride" && !(_id in path("drafts.**"))] | order(dayOfWeek asc, time asc) {
+  rides = await client.fetch<RideExpanded[]>(`
+    *[_type == "ride" && !(_id in path("drafts.**"))] | order(time asc) {
       _id,
       name,
-      dayOfWeek,
+      daysOfWeek,
       time,
       location,
+      address,
+      mapUrl,
+      city->{
+        _id,
+        name,
+        slug,
+        region
+      },
+      group->{
+        _id,
+        name,
+        url,
+        ridesUrl
+      },
       pace,
       description,
-      mapUrl,
       url,
-      urlLabel
+      urlType,
+      urlLabel,
+      seasonStart,
+      seasonEnd
     }
   `)
 } catch (error) {
@@ -44,7 +62,7 @@ const ridesByDay = dayOrder
   .map((day) => ({
     day,
     label: dayLabels[day],
-    rides: rides.filter((ride) => ride.dayOfWeek === day),
+    rides: rides.filter((ride) => ride.daysOfWeek?.includes(day)),
   }))
   .filter((group) => group.rides.length > 0)
 ---
@@ -59,22 +77,33 @@ const ridesByDay = dayOrder
       <p>No rides yet. <a href="/admin">Add some in the Studio</a>.</p>
     </div>
   ) : (
-    ridesByDay.map((group) => (
+    <>
+      <FilterBar />
+      <div class="empty-filtered" id="empty-filtered">
+        <p>No rides match your filters. Try adjusting your selections.</p>
+      </div>
+      {ridesByDay.map((group) => (
       <section class="day-section">
         <h2 class="day-header">{group.label}</h2>
         {group.rides.map((ride) => (
           <RideCard
             name={ride.name}
-            time={ride.time}
+            time={formatTime(ride.time)}
             location={ride.location}
             pace={ride.pace}
+            region={ride.city?.region}
+            address={ride.address}
             description={ride.description}
             mapUrl={ride.mapUrl}
             url={ride.url}
+            urlType={ride.urlType}
             urlLabel={ride.urlLabel}
+            outOfSeason={!isInSeason(ride.seasonStart, ride.seasonEnd)}
+            seasonNote={getSeasonNote(ride.seasonStart, ride.seasonEnd)}
           />
         ))}
       </section>
-    ))
+      ))}
+    </>
   )}
 </Layout>
