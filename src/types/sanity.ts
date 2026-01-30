@@ -11,6 +11,15 @@ export const PACE_DESCRIPTIONS: Record<PaceGrade, string> = {
   'D': 'Beginner-friendly, very chill',
 }
 
+// Pace to dots mapping for visual display: A=5, BB=4, B=3, C=2, D=1
+export const PACE_DOTS: Record<PaceGrade, number> = {
+  'A': 5,
+  'BB': 4,
+  'B': 3,
+  'C': 2,
+  'D': 1,
+}
+
 export const DAYS_OF_WEEK = [
   'monday',
   'tuesday',
@@ -24,6 +33,22 @@ export type DayOfWeek = (typeof DAYS_OF_WEEK)[number]
 
 export const REGIONS = ['dc', 'va', 'md'] as const
 export type Region = (typeof REGIONS)[number]
+
+// Month names for display (1-indexed to match seasonStart/seasonEnd values)
+export const MONTH_NAMES: Record<number, string> = {
+  1: 'January',
+  2: 'February',
+  3: 'March',
+  4: 'April',
+  5: 'May',
+  6: 'June',
+  7: 'July',
+  8: 'August',
+  9: 'September',
+  10: 'October',
+  11: 'November',
+  12: 'December',
+}
 
 // Base type for Sanity references
 export interface SanityReference {

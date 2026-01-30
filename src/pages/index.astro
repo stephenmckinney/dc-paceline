@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro'
 import RideCard from '../components/RideCard.astro'
 import FilterBar from '../components/FilterBar.astro'
 import { client } from '../../sanity/client'
-import type { RideExpanded } from '../types/sanity'
+import { MONTH_NAMES, type RideExpanded } from '../types/sanity'
 
 // Fetch all published rides from Sanity (excludes drafts)
 let rides: RideExpanded[] = []
@@ -61,16 +61,9 @@ function isInSeason(ride: RideExpanded): boolean {
   }
 }
 
-// Month names for display (1-indexed)
-const monthNames: Record<number, string> = {
-  1: 'January', 2: 'February', 3: 'March', 4: 'April',
-  5: 'May', 6: 'June', 7: 'July', 8: 'August',
-  9: 'September', 10: 'October', 11: 'November', 12: 'December',
-}
-
 function getSeasonNote(ride: RideExpanded): string | null {
   if (!ride.seasonStart || !ride.seasonEnd) return null
-  return `Runs ${monthNames[ride.seasonStart]}–${monthNames[ride.seasonEnd]}`
+  return `Runs ${MONTH_NAMES[ride.seasonStart]}–${MONTH_NAMES[ride.seasonEnd]}`
 }
 
 // Format 24-hour time (e.g., "18:00") to 12-hour (e.g., "6:00 PM")

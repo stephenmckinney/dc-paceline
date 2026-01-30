@@ -1,14 +1,5 @@
 ---
-import { PACE_GRADES, PACE_DESCRIPTIONS } from '../types/sanity'
-
-// Pace to dots mapping: A=5, BB=4, B=3, C=2, D=1
-const paceDots: Record<string, number> = {
-  'A': 5,
-  'BB': 4,
-  'B': 3,
-  'C': 2,
-  'D': 1,
-}
+import { PACE_GRADES, PACE_DESCRIPTIONS, PACE_DOTS } from '../types/sanity'
 ---
 
 <div class="filter-bar" id="filter-bar">
@@ -53,7 +44,7 @@ const paceDots: Record<string, number> = {
             <span class="filter-pace-letter">{grade}</span>
             <div class="filter-pace-dots">
               {[1, 2, 3, 4, 5].map((dot) => (
-                <span class:list={['filter-pace-dot', { filled: dot <= paceDots[grade] }]}></span>
+                <span class:list={['filter-pace-dot', { filled: dot <= PACE_DOTS[grade] }]}></span>
               ))}
             </div>
           </button>

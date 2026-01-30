@@ -1,43 +1,33 @@
 import { defineType, defineField } from 'sanity'
+import {
+  DAYS_OF_WEEK as DAYS,
+  PACE_GRADES as PACES,
+  PACE_DESCRIPTIONS,
+  REGIONS as REGION_VALUES,
+  MONTH_NAMES,
+} from '../src/types/sanity'
 
-const DAYS_OF_WEEK = [
-  { title: 'Monday', value: 'monday' },
-  { title: 'Tuesday', value: 'tuesday' },
-  { title: 'Wednesday', value: 'wednesday' },
-  { title: 'Thursday', value: 'thursday' },
-  { title: 'Friday', value: 'friday' },
-  { title: 'Saturday', value: 'saturday' },
-  { title: 'Sunday', value: 'sunday' },
-]
+// Transform shared constants to Sanity list format
+const DAYS_OF_WEEK = DAYS.map((day) => ({
+  title: day.charAt(0).toUpperCase() + day.slice(1),
+  value: day,
+}))
 
-const PACE_GRADES = [
-  { title: 'A - Race pace, hammerfest', value: 'A' },
-  { title: 'BB - Fast group, drops happen', value: 'BB' },
-  { title: 'B - Moderate, regroups', value: 'B' },
-  { title: 'C - Social pace, no-drop', value: 'C' },
-  { title: 'D - Beginner-friendly, very chill', value: 'D' },
-]
+const PACE_GRADES = PACES.map((pace) => ({
+  title: `${pace} - ${PACE_DESCRIPTIONS[pace]}`,
+  value: pace,
+}))
 
 const REGIONS = [
   { title: 'DC', value: 'dc' },
   { title: 'Virginia', value: 'va' },
   { title: 'Maryland', value: 'md' },
-]
+] as const
 
-const MONTHS = [
-  { title: 'January', value: 1 },
-  { title: 'February', value: 2 },
-  { title: 'March', value: 3 },
-  { title: 'April', value: 4 },
-  { title: 'May', value: 5 },
-  { title: 'June', value: 6 },
-  { title: 'July', value: 7 },
-  { title: 'August', value: 8 },
-  { title: 'September', value: 9 },
-  { title: 'October', value: 10 },
-  { title: 'November', value: 11 },
-  { title: 'December', value: 12 },
-]
+const MONTHS = Object.entries(MONTH_NAMES).map(([value, title]) => ({
+  title,
+  value: Number(value),
+}))
 
 // ============================================
 // City

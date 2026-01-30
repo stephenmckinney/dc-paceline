@@ -1,5 +1,5 @@
 ---
-import { PACE_DESCRIPTIONS, type PaceGrade, type Region } from '../types/sanity'
+import { PACE_DESCRIPTIONS, PACE_DOTS, type PaceGrade, type Region } from '../types/sanity'
 
 interface Props {
   name: string
@@ -18,16 +18,7 @@ interface Props {
 
 const { name, time, location, pace, region, address, description, mapUrl, url, urlLabel = 'Details', outOfSeason = false, seasonNote } = Astro.props
 
-// Pace to dots mapping: A=5, BB=4, B=3, C=2, D=1
-const paceDots: Record<string, number> = {
-  'A': 5,
-  'BB': 4,
-  'B': 3,
-  'C': 2,
-  'D': 1,
-}
-
-const filledDots = paceDots[pace] || 3
+const filledDots = PACE_DOTS[pace] || 3
 const paceTooltip = `${pace} pace: ${PACE_DESCRIPTIONS[pace] || ''}`
 ---
 
