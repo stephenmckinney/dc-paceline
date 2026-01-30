@@ -274,6 +274,7 @@ const ride = defineType({
         list: MONTHS,
       },
       description: 'Month when ride season begins',
+      validation: (rule) => rule.integer().min(1).max(12),
     }),
     defineField({
       name: 'seasonEnd',
@@ -284,6 +285,7 @@ const ride = defineType({
         list: MONTHS,
       },
       description: 'Month when ride season ends',
+      validation: (rule) => rule.integer().min(1).max(12),
     }),
   ],
   preview: {
