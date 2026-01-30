@@ -17,6 +17,12 @@
   --gray-600: #525252;
   --gray-900: #171717;
   --accent: #E51937; /* DC flag red */
+
+  /* Brand colors */
+  --strava-orange: #FC4C02;
+  --strava-orange-hover: #E34402;
+  --facebook-blue: #1877F2;
+  --facebook-blue-hover: #1565D8;
 }
 
 body {
@@ -171,6 +177,7 @@ body {
   color: var(--gray-500);
   background: var(--gray-100);
   padding: 2px 6px;
+  border-radius: 2px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   white-space: nowrap;
@@ -325,15 +332,15 @@ body {
 }
 
 .ride-link.strava {
-  background: #FC4C02;
+  background: var(--strava-orange);
   color: var(--white);
-  border-color: #FC4C02;
+  border-color: var(--strava-orange);
 }
 
 .ride-link.facebook {
-  background: #1877F2;
+  background: var(--facebook-blue);
   color: var(--white);
-  border-color: #1877F2;
+  border-color: var(--facebook-blue);
 }
 
 /* Footer */
@@ -692,13 +699,13 @@ body {
   }
 
   .ride-link.strava:hover {
-    background: #E34402;
-    border-color: #E34402;
+    background: var(--strava-orange-hover);
+    border-color: var(--strava-orange-hover);
   }
 
   .ride-link.facebook:hover {
-    background: #1565D8;
-    border-color: #1565D8;
+    background: var(--facebook-blue-hover);
+    border-color: var(--facebook-blue-hover);
   }
 
   .footer {

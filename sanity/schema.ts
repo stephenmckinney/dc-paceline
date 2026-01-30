@@ -29,6 +29,9 @@ const MONTHS = Object.entries(MONTH_NAMES).map(([value, title]) => ({
   value: Number(value),
 }))
 
+// Validation pattern for 24-hour time format (HH:MM)
+const TIME_24H_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/
+
 // ============================================
 // City
 // ============================================
@@ -228,7 +231,7 @@ const ride = defineType({
       type: 'string',
       description: '24-hour format, e.g., "17:30" or "08:00"',
       validation: (rule) =>
-        rule.required().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+        rule.required().regex(TIME_24H_PATTERN, {
           name: '24-hour time',
           invert: false,
         }),
