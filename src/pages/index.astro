@@ -3,7 +3,8 @@ import Layout from '../layouts/Layout.astro'
 import RideCard from '../components/RideCard.astro'
 import FilterBar from '../components/FilterBar.astro'
 import { client } from '../../sanity/client'
-import { MONTH_NAMES, type RideExpanded } from '../types/sanity'
+import type { RideExpanded } from '../types/sanity'
+import { isInSeason, getSeasonNote, formatTime } from '../lib/rides'
 
 // Fetch all published rides from Sanity (excludes drafts)
 let rides: RideExpanded[] = []
@@ -42,36 +43,6 @@ try {
 } catch (error) {
   console.error('Failed to fetch rides from Sanity:', error)
   fetchError = true
-}
-
-// Helper to check if a ride is currently in season
-function isInSeason(ride: RideExpanded): boolean {
-  // No season defined = year-round
-  if (!ride.seasonStart || !ride.seasonEnd) return true
-
-  const currentMonth = new Date().getMonth() + 1 // 1-12
-
-  // Handle wrap-around seasons (e.g., November to March)
-  if (ride.seasonStart <= ride.seasonEnd) {
-    // Normal range (e.g., April to October)
-    return currentMonth >= ride.seasonStart && currentMonth <= ride.seasonEnd
-  } else {
-    // Wrap-around range (e.g., November to March)
-    return currentMonth >= ride.seasonStart || currentMonth <= ride.seasonEnd
-  }
-}
-
-function getSeasonNote(ride: RideExpanded): string | null {
-  if (!ride.seasonStart || !ride.seasonEnd) return null
-  return `Runs ${MONTH_NAMES[ride.seasonStart]}–${MONTH_NAMES[ride.seasonEnd]}`
-}
-
-// Format 24-hour time (e.g., "18:00") to 12-hour (e.g., "6:00 PM")
-function formatTime(time: string): string {
-  const [hours, minutes] = time.split(':').map(Number)
-  const period = hours >= 12 ? 'PM' : 'AM'
-  const displayHours = hours % 12 || 12
-  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`
 }
 
 // Group rides by day of week
@@ -125,8 +96,8 @@ const ridesByDay = dayOrder
             mapUrl={ride.mapUrl}
             url={ride.url}
             urlLabel={ride.urlLabel}
-            outOfSeason={!isInSeason(ride)}
-            seasonNote={getSeasonNote(ride)}
+            outOfSeason={!isInSeason(ride.seasonStart, ride.seasonEnd)}
+            seasonNote={getSeasonNote(ride.seasonStart, ride.seasonEnd)}
           />
         ))}
       </section>
