@@ -34,6 +34,16 @@ export type DayOfWeek = (typeof DAYS_OF_WEEK)[number]
 export const REGIONS = ['dc', 'va', 'md'] as const
 export type Region = (typeof REGIONS)[number]
 
+export const URL_TYPES = ['strava', 'facebook', 'other'] as const
+export type UrlType = (typeof URL_TYPES)[number]
+
+// Default labels for URL types
+export const URL_TYPE_LABELS: Record<UrlType, string> = {
+  strava: 'Strava',
+  facebook: 'Facebook',
+  other: 'More info',
+}
+
 // Month names for display (1-indexed to match seasonStart/seasonEnd values)
 export const MONTH_NAMES: Record<number, string> = {
   1: 'January',
@@ -99,6 +109,7 @@ export interface Ride {
   pace: PaceGrade
   description?: string
   url?: string
+  urlType?: UrlType
   urlLabel?: string
   seasonStart?: number
   seasonEnd?: number

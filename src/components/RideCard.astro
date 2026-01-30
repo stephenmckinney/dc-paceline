@@ -1,5 +1,5 @@
 ---
-import { PACE_DESCRIPTIONS, PACE_DOTS, type PaceGrade, type Region } from '../types/sanity'
+import { PACE_DESCRIPTIONS, PACE_DOTS, URL_TYPE_LABELS, type PaceGrade, type Region, type UrlType } from '../types/sanity'
 
 interface Props {
   name: string
@@ -11,15 +11,17 @@ interface Props {
   description?: string
   mapUrl?: string
   url?: string
+  urlType?: UrlType
   urlLabel?: string
   outOfSeason?: boolean
   seasonNote?: string | null
 }
 
-const { name, time, location, pace, region, address, description, mapUrl, url, urlLabel = 'Details', outOfSeason = false, seasonNote } = Astro.props
+const { name, time, location, pace, region, address, description, mapUrl, url, urlType = 'other', urlLabel, outOfSeason = false, seasonNote } = Astro.props
 
 const filledDots = PACE_DOTS[pace] || 3
 const paceTooltip = `${pace} pace: ${PACE_DESCRIPTIONS[pace] || ''}`
+const linkLabel = urlLabel || URL_TYPE_LABELS[urlType]
 ---
 
 <article
@@ -81,8 +83,8 @@ const paceTooltip = `${pace} pace: ${PACE_DESCRIPTIONS[pace] || ''}`
         </a>
       )}
       {url && (
-        <a href={url} class:list={['ride-link', 'secondary', { 'strava': urlLabel === 'Strava', 'facebook': urlLabel === 'Facebook' }]} target="_blank" rel="noopener noreferrer">
-          {urlLabel}
+        <a href={url} class:list={['ride-link', 'secondary', { 'strava': urlType === 'strava', 'facebook': urlType === 'facebook' }]} target="_blank" rel="noopener noreferrer">
+          {linkLabel}
         </a>
       )}
     </div>

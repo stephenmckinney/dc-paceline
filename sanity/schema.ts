@@ -5,6 +5,8 @@ import {
   PACE_DESCRIPTIONS,
   REGIONS as REGION_VALUES,
   MONTH_NAMES,
+  URL_TYPES,
+  URL_TYPE_LABELS,
 } from '../src/types/sanity'
 
 // Transform shared constants to Sanity list format
@@ -27,6 +29,11 @@ const REGIONS = [
 const MONTHS = Object.entries(MONTH_NAMES).map(([value, title]) => ({
   title,
   value: Number(value),
+}))
+
+const LINK_TYPES = URL_TYPES.map((type) => ({
+  title: URL_TYPE_LABELS[type],
+  value: type,
 }))
 
 // Validation pattern for 24-hour time format (HH:MM)
@@ -260,10 +267,21 @@ const ride = defineType({
       description: 'Link to ride details, Strava club, or organizer page',
     }),
     defineField({
+      name: 'urlType',
+      title: 'Link Type',
+      type: 'string',
+      options: {
+        list: LINK_TYPES,
+        layout: 'radio',
+      },
+      initialValue: 'other',
+      description: 'Platform type for button styling',
+    }),
+    defineField({
       name: 'urlLabel',
       title: 'URL Button Label',
       type: 'string',
-      description: 'e.g., "Strava", "Details", "DCMTB" (defaults to "Details")',
+      description: 'Custom label (optional, defaults based on link type)',
     }),
     defineField({
       name: 'seasonStart',
