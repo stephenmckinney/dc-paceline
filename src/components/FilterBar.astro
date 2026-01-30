@@ -1,5 +1,6 @@
 ---
 import { PACE_GRADES, PACE_DESCRIPTIONS, PACE_DOTS } from '../types/sanity'
+import CheckIcon from './icons/CheckIcon.astro'
 ---
 
 <div class="filter-bar" id="filter-bar">
@@ -18,21 +19,15 @@ import { PACE_GRADES, PACE_DESCRIPTIONS, PACE_DOTS } from '../types/sanity'
       <div class="filter-chip-section">
         <span class="filter-chip-label">Region</span>
         <button class="filter-chip active" data-filter-region="dc">
-          <svg class="filter-check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
+          <CheckIcon class="filter-check-icon" />
           DC
         </button>
         <button class="filter-chip active" data-filter-region="va">
-          <svg class="filter-check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
+          <CheckIcon class="filter-check-icon" />
           VA
         </button>
         <button class="filter-chip active" data-filter-region="md">
-          <svg class="filter-check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
+          <CheckIcon class="filter-check-icon" />
           MD
         </button>
       </div>
@@ -53,9 +48,7 @@ import { PACE_GRADES, PACE_DESCRIPTIONS, PACE_DOTS } from '../types/sanity'
       <div class="filter-chip-divider"></div>
       <div class="filter-chip-section">
         <button class="filter-chip" data-filter-toggle="hide-seasonal">
-          <svg class="filter-check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
+          <CheckIcon class="filter-check-icon" />
           Hide seasonal
         </button>
       </div>
