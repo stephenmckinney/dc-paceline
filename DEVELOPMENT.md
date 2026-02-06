@@ -4,7 +4,7 @@ Technical reference for developing and maintaining DC Paceline.
 
 ## Architecture
 
-```
+```text
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │  Sanity Studio  │────▶│   Sanity API    │────▶│   Astro Build   │
 │   (/admin)      │     │  (Content Lake) │     │                 │
@@ -26,7 +26,7 @@ Technical reference for developing and maintaining DC Paceline.
 
 ## Project Structure
 
-```
+```text
 dc-paceline/
 ├── src/
 │   ├── pages/
@@ -91,4 +91,5 @@ npx sanity cors add https://dc-paceline.pages.dev --credentials
 
 ## Environment
 
-No `.env` file required - the Sanity project ID is public and safe to commit. The Sanity dataset is read-only via CDN for the frontend; write access requires authentication through the Studio.
+No `.env` file required - the Sanity project ID is public and safe to commit.
+The Sanity dataset is read-only via CDN for the frontend; write access requires authentication through the Studio.
