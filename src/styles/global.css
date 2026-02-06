@@ -411,16 +411,42 @@ button:focus-visible {
 .footer-left {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 12px;
+}
+
+.footer-icon {
+  width: 14px;
+  height: 14px;
+  transition: color 0.2s ease;
 }
 
 .footer-link {
-  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--gray-500);
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .footer-link:hover {
-  text-decoration: underline;
+  text-decoration: none;
+}
+
+.footer-heart-link:hover {
+  color: var(--accent);
+}
+
+.footer-heart-link:hover .heart-icon {
+  color: var(--accent);
+}
+
+.footer-coffee-link:hover {
+  color: #8B5E3C;
+}
+
+.footer-coffee-link:hover .coffee-icon {
+  color: #8B5E3C;
 }
 
 .footer-right {
