@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro'
 import RideCard from '../components/RideCard.astro'
 import FilterBar from '../components/FilterBar.astro'
 import { client } from '../../sanity/client'
-import type { RideExpanded } from '../types/sanity'
+import { DAYS_OF_WEEK, type RideExpanded } from '../types/sanity'
 import { isInSeason, getSeasonNote, formatTime } from '../lib/rides'
 
 // Fetch all published rides from Sanity (excludes drafts)
@@ -47,7 +47,6 @@ try {
 }
 
 // Group rides by day of week
-const dayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 const dayLabels: Record<string, string> = {
   monday: 'Monday',
   tuesday: 'Tuesday',
@@ -58,7 +57,7 @@ const dayLabels: Record<string, string> = {
   sunday: 'Sunday',
 }
 
-const ridesByDay = dayOrder
+const ridesByDay = DAYS_OF_WEEK
   .map((day) => ({
     day,
     label: dayLabels[day],

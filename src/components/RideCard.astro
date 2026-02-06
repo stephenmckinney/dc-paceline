@@ -22,6 +22,7 @@ const { name, time, location, pace, region, address, description, mapUrl, url, u
 const filledDots = PACE_DOTS[pace]
 const paceTooltip = `${pace} pace: ${PACE_DESCRIPTIONS[pace] || ''}`
 const linkLabel = urlLabel || URL_TYPE_LABELS[urlType]
+const rideId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 ---
 
 <article
@@ -30,7 +31,13 @@ const linkLabel = urlLabel || URL_TYPE_LABELS[urlType]
   data-pace={pace}
   data-seasonal={outOfSeason ? 'true' : 'false'}
 >
-  <div class="ride-header" data-ride-toggle>
+  <button
+    type="button"
+    class="ride-header"
+    data-ride-toggle
+    aria-expanded="false"
+    aria-controls={`ride-details-${rideId}`}
+  >
     <div class="ride-info">
       <div class="ride-title-row">
         <h3 class="ride-title">{name}</h3>
@@ -40,13 +47,13 @@ const linkLabel = urlLabel || URL_TYPE_LABELS[urlType]
       </div>
       <div class="ride-meta">
         <span class="ride-meta-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
           {time}
         </span>
         <span class="ride-meta-item">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
           </svg>
           {location}
@@ -54,18 +61,19 @@ const linkLabel = urlLabel || URL_TYPE_LABELS[urlType]
       </div>
     </div>
     <div class="ride-right">
-      <div class="pace-rating" title={paceTooltip}>
+      <div class="pace-rating" title={paceTooltip} aria-hidden="true">
         {[1, 2, 3, 4, 5].map((dot) => (
           <span class:list={['pace-dot', { filled: dot <= filledDots }]}></span>
         ))}
         <span class="pace-label">{pace}</span>
       </div>
-      <svg class="expand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <span class="visually-hidden">Pace: {pace}, {PACE_DESCRIPTIONS[pace]}</span>
+      <svg class="expand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
       </svg>
     </div>
-  </div>
-  <div class="ride-details">
+  </button>
+  <div class="ride-details" id={`ride-details-${rideId}`}>
     {description && <p class="ride-description">{description}</p>}
     {address && (
       <div class="ride-address">
@@ -76,7 +84,7 @@ const linkLabel = urlLabel || URL_TYPE_LABELS[urlType]
     <div class="ride-links">
       {mapUrl && (
         <a href={mapUrl} class="ride-link" target="_blank" rel="noopener noreferrer">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
           </svg>
           Map
@@ -100,7 +108,8 @@ const linkLabel = urlLabel || URL_TYPE_LABELS[urlType]
       const toggle = (event.target as Element).closest('[data-ride-toggle]')
       if (toggle) {
         const card = toggle.closest('.ride-card')
-        card?.classList.toggle('expanded')
+        const isExpanded = card?.classList.toggle('expanded')
+        toggle.setAttribute('aria-expanded', String(isExpanded))
       }
     })
   }
