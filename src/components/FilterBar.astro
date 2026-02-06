@@ -3,46 +3,47 @@ import { PACE_GRADES, PACE_DESCRIPTIONS, PACE_DOTS } from '../types/sanity'
 import CheckIcon from './icons/CheckIcon.astro'
 ---
 
-<div class="filter-bar" id="filter-bar">
-  <button class="filter-toggle" id="filter-toggle">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<nav class="filter-bar" id="filter-bar" aria-label="Ride filters">
+  <button class="filter-toggle" id="filter-toggle" aria-expanded="false" aria-controls="filter-panel">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
     </svg>
     <span>Filters</span>
-    <span class="filter-badge" id="filter-badge" style="display: none;">0</span>
-    <svg class="filter-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <span class="filter-badge" id="filter-badge" style="display: none;" aria-hidden="true">0</span>
+    <svg class="filter-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
     </svg>
   </button>
   <div class="filter-panel" id="filter-panel">
     <div class="filter-chip-row">
       <div class="filter-chip-section">
-        <span class="filter-chip-label">Region</span>
-        <button class="filter-chip active" data-filter-region="dc">
+        <span class="filter-chip-label" id="region-label">Region</span>
+        <button class="filter-chip active" data-filter-region="dc" aria-pressed="true">
           <CheckIcon class="filter-check-icon" />
           DC
         </button>
-        <button class="filter-chip active" data-filter-region="va">
+        <button class="filter-chip active" data-filter-region="va" aria-pressed="true">
           <CheckIcon class="filter-check-icon" />
           VA
         </button>
-        <button class="filter-chip active" data-filter-region="md">
+        <button class="filter-chip active" data-filter-region="md" aria-pressed="true">
           <CheckIcon class="filter-check-icon" />
           MD
         </button>
       </div>
       <div class="filter-chip-divider"></div>
       <div class="filter-chip-section">
-        <span class="filter-chip-label">Pace</span>
+        <span class="filter-chip-label" id="pace-label">Pace</span>
         {PACE_GRADES.map((grade) => (
           <button
             class="filter-chip filter-chip-pace active"
             data-filter-pace={grade}
             title={`${grade}: ${PACE_DESCRIPTIONS[grade]}`}
             aria-label={`${grade}: ${PACE_DESCRIPTIONS[grade]}`}
+            aria-pressed="true"
           >
             <span class="filter-pace-letter">{grade}</span>
-            <div class="filter-pace-dots">
+            <div class="filter-pace-dots" aria-hidden="true">
               {[1, 2, 3, 4, 5].map((dot) => (
                 <span class:list={['filter-pace-dot', { filled: dot <= PACE_DOTS[grade] }]}></span>
               ))}
@@ -52,18 +53,18 @@ import CheckIcon from './icons/CheckIcon.astro'
       </div>
       <div class="filter-chip-divider"></div>
       <div class="filter-chip-section">
-        <button class="filter-chip" data-filter-toggle="hide-seasonal">
+        <button class="filter-chip" data-filter-toggle="hide-seasonal" aria-pressed="false">
           <CheckIcon class="filter-check-icon" />
           Hide seasonal
         </button>
       </div>
     </div>
     <div class="filter-footer">
-      <span class="filter-summary" id="filter-summary">Showing all rides</span>
+      <span class="filter-summary" id="filter-summary" aria-live="polite" aria-atomic="true">Showing all rides</span>
       <button class="filter-clear" id="filter-clear">Clear all</button>
     </div>
   </div>
-</div>
+</nav>
 
 <script>
   // Type definitions
@@ -117,7 +118,8 @@ import CheckIcon from './icons/CheckIcon.astro'
 
   // Toggle panel
   filterToggle?.addEventListener('click', () => {
-    filterBar?.classList.toggle('expanded')
+    const isExpanded = filterBar?.classList.toggle('expanded')
+    filterToggle.setAttribute('aria-expanded', String(isExpanded))
   })
 
   // Region chips
@@ -129,6 +131,7 @@ import CheckIcon from './icons/CheckIcon.astro'
       state.regions[region] = !state.regions[region]
       chip.classList.toggle('active', state.regions[region])
       chip.classList.toggle('inactive', !state.regions[region])
+      chip.setAttribute('aria-pressed', String(state.regions[region]))
       applyFilters()
     })
   })
@@ -142,6 +145,7 @@ import CheckIcon from './icons/CheckIcon.astro'
       state.paces[pace] = !state.paces[pace]
       chip.classList.toggle('active', state.paces[pace])
       chip.classList.toggle('inactive', !state.paces[pace])
+      chip.setAttribute('aria-pressed', String(state.paces[pace]))
       applyFilters()
     })
   })
@@ -150,6 +154,7 @@ import CheckIcon from './icons/CheckIcon.astro'
   document.querySelector<HTMLElement>(SELECTORS.filterToggle)?.addEventListener('click', function() {
     state.hideSeasonal = !state.hideSeasonal
     this.classList.toggle('active', state.hideSeasonal)
+    this.setAttribute('aria-pressed', String(state.hideSeasonal))
     applyFilters()
   })
 
@@ -169,6 +174,7 @@ import CheckIcon from './icons/CheckIcon.astro'
 
       chip.classList.toggle('active', state.regions[region])
       chip.classList.toggle('inactive', !state.regions[region])
+      chip.setAttribute('aria-pressed', String(state.regions[region]))
     })
     document.querySelectorAll<HTMLElement>(SELECTORS.filterPace).forEach(chip => {
       const pace = chip.dataset.filterPace
@@ -176,9 +182,11 @@ import CheckIcon from './icons/CheckIcon.astro'
 
       chip.classList.toggle('active', state.paces[pace])
       chip.classList.toggle('inactive', !state.paces[pace])
+      chip.setAttribute('aria-pressed', String(state.paces[pace]))
     })
-    const seasonalChip = document.querySelector(SELECTORS.filterToggle)
+    const seasonalChip = document.querySelector<HTMLElement>(SELECTORS.filterToggle)
     seasonalChip?.classList.toggle('active', state.hideSeasonal)
+    seasonalChip?.setAttribute('aria-pressed', String(state.hideSeasonal))
   }
 
   function updateBadge() {
